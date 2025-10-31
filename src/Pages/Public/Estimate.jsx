@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { UploadFile } from '../../Api/Module/DashboardApi';
 import { GetBudget } from '../../Api/Module/DashboardApi';
 import { UpdateBudget } from '../../Api/Module/DashboardApi';
@@ -11,8 +11,10 @@ import {
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { toast } from 'react-toastify';
+import { useUser } from "../Auth/UserContext";
 
 const Estimate = () => {
+    const { user } = useUser();
     const MySwal = withReactContent(Swal);
     const [editingRowId, setEditingRowId] = useState(null);
     const [editFormData, setEditFormData] = useState({});
@@ -20,6 +22,7 @@ const Estimate = () => {
 		{ 
             header: "Details", 
             children: [
+                ...(["ADMIN", "REVIEWER", "SPECIALIST"].includes(user?.permission) ? [
                 { header: "Action", accessor: "action",
                     renderCell: (_, row) => (
                         <div className="flex gap-2">
@@ -72,7 +75,7 @@ const Estimate = () => {
                             )}
                         </div>
                     )
-                },
+                }] : []),
                 { header: "Location", accessor: "location" },
                 { header: "Budget Source", accessor: "budget_source" },
                 { header: "Category", accessor: "category" },
@@ -279,7 +282,8 @@ const Estimate = () => {
         {
             header: "September",
             children: [
-                 { header: "Locked In", accessor: "sep",
+                { header: "Locked In", accessor: "sep"},
+                { header: "Adjustment", accessor: "sep_adjustment",
                     renderCell: (value, row, accessor) =>
                     editingRowId === row.id ? (
                         <input
@@ -294,7 +298,6 @@ const Estimate = () => {
                         value
                     )
                 },
-                { header: "Adjustment", accessor: "sep_adjustment" },
                 { header: "Calibrated", accessor: "sep_calibrated" },
                 { header: "Utilized", accessor: "sep_utilized" },
                 { header: "Available", accessor: "sep_available" },
@@ -381,7 +384,7 @@ const Estimate = () => {
                 { header: "Updated At", accessor: "updated_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd HH:mm"):"" },
             ] 
         },   
-	]; 
+	];
     const [file, setFile] = useState(null);
     const [progress, setProgress] = useState(0);
     const [uploading, setUploading] = useState(false);
@@ -425,6 +428,7 @@ const Estimate = () => {
             if (response && response.data[0]) {
                 setDataBudget(response.data[0]);
             }
+            toast.success("Budget data fetched successfully.");
             console.log(response);
         } catch (error) {
             console.error('Error fetching user data:', error);
@@ -514,6 +518,11 @@ const Estimate = () => {
                         </option>
                     ))}
                     </select>
+                </div>
+                <div>
+                    <button className="p-2" onClick={fetchData} title="Refresh Data">
+                        <ArrowPathIcon className="h-5 w-5 text-gray-600 hover:text-blue-600 transition" />
+                    </button>
                 </div>
                 <div className="w-full max-w-2xl bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 flex flex-col gap-2 ml-auto">
                     <h2 className="text-xl font-semibold text-white text-center mb-6">

@@ -211,6 +211,24 @@ export const ApproveBudgetRequest = async (id) => {
     }
 }
 
+export const RejectBudgetRequest = async (id) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post(  
+            "/abs/reject-budget-request",
+            id,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while approving budget request: ", error);
+        throw error;
+    }
+}
+
 
 
 

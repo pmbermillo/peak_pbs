@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from "react";
 import { LoginAPI } from '../../Api/Auth/AuthApi';
+import { useUser } from './UserContext';
 
 const objValidator = { ...objFormValidator };
 
@@ -34,6 +35,7 @@ const iconMap = {
 };
 
 const Login = () => {
+    const { setUser } = useUser();
     const [objFormData, setFormData] = useState(initialData);
     const [showPassword, setShowPassword] = useState(false);
     const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -62,7 +64,7 @@ const Login = () => {
             console.log(data)
             const urlToken = data.data.token;
             localStorage.setItem('auth_token', urlToken);
-            // setUser(data.data.user); // Set user data in context
+            setUser(data.data.user);
             navigate('/dashboard');
             toast.success(data.data.message || 'Login successful!');
         } catch (error) {
@@ -108,7 +110,12 @@ const Login = () => {
                         placeholder=" "
                         className={`peer w-full rounded-xl p-3 pl-10 text-white bg-gray-900/60 border border-gray-700 focus:border-blue-500 outline-none transition`}
                         />
-                        <label className="absolute left-10 top-3 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-400">
+                        <label
+                        className={`absolute left-10 text-gray-400 text-sm transition-all
+                        peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
+                        peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-400
+                        ${objFormData[key] ? '-top-2 text-xs text-blue-400' : ''}`}
+                        >
                         {value.placeHolder}
                         </label>
 
@@ -142,8 +149,10 @@ const Login = () => {
                     <CiLogin className="h-5 w-5" />
                 <span>Login</span>
                 </button>
+                <div className="text-center text-[12px] text-gray-300 tracking-wide mt-6">
+                    v1.0.0 • © 2025 <span className="font-medium">Peak Budget System</span>
+                </div>
             </div>
-
             {/* Gradient animation keyframes */}
             <style>
                 {`
@@ -159,63 +168,6 @@ const Login = () => {
                 `}
             </style>
         </div>
-        // <div className="w-full h-screen flex items-center justify-center">
-        //     <div className="w-[90%] max-w-sm md:max-w-md lg:max-w-md p-5 bg-gray-900 flex-col flex items-center gap-3 rounded-xl shadow-slate-500 shadow-lg">
-        //         <img src="/" alt="logo" className="w-12 md:w-14" />
-        //         <h1 className="text-lg md:text-xl font-semibold text-white">Accounting Budget System</h1>
-        //         <p className="text-xs md:text-sm text-gray-500 text-center">Welcome Back!
-        //             {/* <span className="text-white"> Sign up</span> */}
-        //         </p>
-        //         <div className="w-full flex flex-col gap-3">
-        //         {Object.entries(objValidator.fields).map(([key, value], index) => (
-        //             <div key={index} className="relative flex items-center bg-gray-800 p-2 rounded-xl gap-2 text-white">
-        //             <div className="flex items-center gap-2">
-        //                 {
-        //                 iconMap[value.inputType]
-        //                 }
-        //                 {(value.type === "text" || value.type === "password") && (
-        //                 <>
-        //                     <input
-        //                     type={value.type === "password" ? (showPassword ? "text" : "password") : value.type}
-        //                     value={objFormData[key]}
-        //                     onChange={(e) => setFormData({ ...objFormData, [key]: e.target.value })}
-        //                     placeholder={value.placeHolder}
-        //                     className="bg-transaprent border-0 w-full outline-none text-sm md:text-base"
-        //                     />
-        //                     {value.type === "password" && (
-        //                     <div className="absolute right-2 top-4">
-        //                         {showPassword ? (
-        //                         <FaRegEyeSlash
-        //                             className="absolute right-2 cursor-pointer"
-        //                             onClick={togglePasswordVisibility}
-        //                         />) : (
-        //                         <FaRegEye
-        //                             className="absolute right-2 cursor-pointer"
-        //                             onClick={togglePasswordVisibility} />)}
-        //                     </div>
-        //                     )}
-        //                 </>
-        //                 )}
-        //             </div>
-        //             {
-        //                 objValidator.getErrorType(key) && (
-        //                 <p className="text-red-500 text-xs mt-1">
-        //                     {objValidator.getError(key, objValidator.fields[key])}
-        //                 </p>
-        //                 )
-        //             }
-        //             </div>
-        //         ))}
-        //         </div>
-        //         <button className="bg-blue-500 p-2 rounded-xl mt-3 hover:text-blue-600 text-sm md:text-base text-white" onClick={handleSubmitLogin}>
-        //             <CiLogin className="inline" /> Login 
-        //         </button>
-        //         {/* <button className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-100">
-        //             <ArrowRightOnRectangleIcon className="h-6 w-6 text-blue-600" />
-        //             <span>Sign In</span>
-        //         </button> */}
-        //     </div>
-        // </div>
     )
 }
 

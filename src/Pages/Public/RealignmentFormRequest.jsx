@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from "react";
+import { toast } from 'react-toastify';
 
 const realignmentFormRequest = () => {
     const [formData, setFormData] = useState({
@@ -32,7 +33,7 @@ const realignmentFormRequest = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Form submitted:", formData);
+        toast.info("This is a demo form. Submission functionality is not implemented yet.");
     };
     return (
         <div >

@@ -18,7 +18,7 @@ export const LogoutAPI = async () => {
     
     try {
         return await axiosInstance.post(
-            "/logout",
+            "abs/logout",
             {},
             {
               headers: {
@@ -41,11 +41,11 @@ export const getAuthUserAPI = async () => {
     }
 }
 
-export const GetMyProfile = async (item) => {
+export const GetMyProfile = async () => {
     const token = localStorage.getItem('auth_token');
     try {
         return await axiosInstance.get(
-            "/me",
+            "abs/me",
             {
               headers: {
                 Authorization: `Bearer ${token}`, // Send token in the Authorization header
@@ -63,7 +63,7 @@ export const ResetPassword = async (data) => {
     
     try {
         return await axiosInstance.post(
-            "/change-password",
+            "abs/change-password",
             data, 
             {
               headers: {

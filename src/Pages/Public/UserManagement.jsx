@@ -19,8 +19,10 @@ const UserManagement = () => {
     });
     const permissionOptions = [
         { value: 'ADMIN', label: 'ADMIN' },
-        { value: 'USER', label: 'USER' },
-        { value: 'GUESS', label: 'GUESS' },
+        { value: 'REQUESTOR', label: 'REQUESTOR' },
+        { value: 'REVIEWER', label: 'REVIEWER' },
+        { value: 'APPROVER', label: 'APPROVER' },
+        { value: 'SPECIALIST', label: 'SPECIALIST' },
     ];
     const [permission, setPermission] = useState(permissionOptions);   
     const columns = [

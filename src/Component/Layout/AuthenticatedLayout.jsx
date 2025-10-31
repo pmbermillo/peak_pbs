@@ -11,9 +11,9 @@ const AuthenticatedLayout = () => {
 
             {/* Main Content */}
             <main
-                className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ${
-                    isSidebarOpen ? "ml-54" : "ml-16"
-                }`}
+            className={`flex-1 p-6 overflow-y-auto transition-all duration-300 ${
+                isSidebarOpen ? "ml-56" : "ml-16"
+            }`}
             >
                 <Outlet />
             </main>

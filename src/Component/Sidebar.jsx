@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"
 import {
 	Bars3Icon,
@@ -8,14 +9,30 @@ import {
 	ChevronDownIcon,
 	ChartBarIcon,
 	Cog6ToothIcon,
-	ClipboardDocumentListIcon, DocumentChartBarIcon, DocumentTextIcon 
+	ClipboardDocumentListIcon, DocumentChartBarIcon, DocumentTextIcon, ArrowRightOnRectangleIcon
 	} from "@heroicons/react/24/outline"
+import { useUser } from "../Pages/Auth/UserContext";
+import { LogoutAPI } from "../Api/Auth/AuthApi";
+import { toast } from 'react-toastify';
 
 export const Sidebar = ({open, setOpen}) =>{
+	const navigate = useNavigate();
 	// const [open, setOpen] = useState(true)          // controls sidebar open/close
 	const [openForms, setOpenForms] = useState(false)
 	const [openSettings, setOpenSettings] = useState(false) 
 	const [openRecords, setOpenRecords] = useState(false)
+	const { user } = useUser();
+
+	const handleLogout = async () => {
+		try {
+			const response = await LogoutAPI();
+			toast.success(response.data.message);
+			localStorage.removeItem('auth_token');
+			navigate('/');
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
 	return (
 		<div
@@ -44,49 +61,53 @@ export const Sidebar = ({open, setOpen}) =>{
 					<HomeIcon className="h-5 w-5" />
 					{open && "Dashboard"}
 				</Link>
-				<Link
-					to="/budget-estimate"
-					className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition"
-				>
-					<DocumentChartBarIcon  className="h-5 w-5" />
-					{open && "Budget Estimate"}
-				</Link>
+				{["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER"].includes(user?.permission) && (
+					<Link
+						to="/budget-estimate"
+						className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition"
+					>
+						<DocumentChartBarIcon  className="h-5 w-5" />
+						{open && "Budget Estimate"}
+					</Link>
+				)}
 				{/* Request Forms expandable */}
 				<div>
-					<button
-					onClick={() => setOpenForms(!openForms)}
-					className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition w-full justify-between"
-					>
-					<span className="flex items-center gap-2">
-						<DocumentTextIcon className="h-5 w-5" />
-						{open && "Request Forms"}
-					</span>
-					{open && (
-						<ChevronDownIcon
-						className={`h-4 w-4 transition-transform ${
-							openForms ? "rotate-180" : ""
-						}`}
-						/>
+					{["ADMIN", "APPROVER", "REQUESTOR"].includes(user?.permission) && (
+						<button
+						onClick={() => setOpenForms(!openForms)}
+						className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition w-full justify-between"
+						>
+						<span className="flex items-center gap-2">
+							<DocumentTextIcon className="h-5 w-5" />
+							{open && "Request Forms"}
+						</span>
+						{open && (
+							<ChevronDownIcon
+							className={`h-4 w-4 transition-transform ${
+								openForms ? "rotate-180" : ""
+							}`}
+							/>
+						)}
+						</button>
 					)}
-					</button>
 					{openForms && open && (
 					<div className="ml-8 space-y-1">
-						<Link
-						to="/budget-request"
-						className="block p-1 text-sm hover:underline"
-						>
-						{/* <a href="#" className="block p-1 text-sm hover:underline"> */}
-						Budget
-						{/* </a> */}
-						</Link>
-						<Link
-						to="/realignment-request"
-						className="block p-1 text-sm hover:underline"
-						>
-						{/* <a href="#" className="block p-1 text-sm hover:underline"> */}
-						Re-alignment
-						{/* </a> */}
-						</Link>
+						{["ADMIN", "APPROVER", "REQUESTOR"].includes(user?.permission) && (
+							<Link
+							to="/budget-request"
+							className="block p-1 text-sm hover:underline"
+							>
+								Budget
+							</Link>
+						)}
+						{["ADMIN", "APPROVER"].includes(user?.permission) && (
+							<Link
+							to="/realignment-request"
+							className="block p-1 text-sm hover:underline"
+							>
+								Re-alignment
+							</Link>
+						)}
 					</div>
 					)}
 				</div>
@@ -116,93 +137,113 @@ export const Sidebar = ({open, setOpen}) =>{
 						>
 							Budget Request
 						</Link>
-						<Link
-						to="/realignment-request-record"
-						className="block p-1 text-sm hover:underline"
-						>
-							Re-alignment Request
-						</Link>
+						{["ADMIN", "APPROVER", "REVIEWER", "SPECIALIST"].includes(user?.permission) && (
+							<Link
+								to="/realignment-request-record"
+								className="block p-1 text-sm hover:underline"
+							>
+								Re-alignment Request
+							</Link>
+						)}
 					</div>
 					)}
 				</div>
-				<a
-					href="#"
-					className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100"
-				>
-					<ChartBarIcon className="h-5 w-5" />
-					{open && "Reports"}
-				</a>
-				{/* Request Forms expandable */}
-				<div>
-					<button
-					onClick={() => setOpenSettings(!openSettings)}
-					className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition w-full justify-between"
+				{["ADMIN", "APPROVER", "REVIEWER", "SPECIALIST"].includes(user?.permission) && (
+					<Link
+						to="/reports"
+						className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition"
 					>
-						<span className="flex items-center gap-2">
-							<Cog6ToothIcon className="h-5 w-5" />
-							{open && "Settings"}
-						</span>
-						{open && (
-							<ChevronDownIcon
-							className={`h-4 w-4 transition-transform ${
-								openSettings ? "rotate-180" : ""
-							}`}
-							/>
+						<ChartBarIcon  className="h-5 w-5" />
+						{open && "Reports"}
+					</Link>
+				)}
+				{/* Request Forms expandable */}
+				{["ADMIN", "REVIEWER", "SPECIALIST"].includes(user?.permission) && (
+					<div>
+						<button
+						onClick={() => setOpenSettings(!openSettings)}
+						className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition w-full justify-between"
+						>
+							<span className="flex items-center gap-2">
+								<Cog6ToothIcon className="h-5 w-5" />
+								{open && "Settings"}
+							</span>
+							{open && (
+								<ChevronDownIcon
+								className={`h-4 w-4 transition-transform ${
+									openSettings ? "rotate-180" : ""
+								}`}
+								/>
+							)}
+						</button>
+						{openSettings && open && (
+						<div className="ml-8 space-y-1">
+							<Link
+							to="/user-management"
+							className="block p-1 text-sm hover:underline"
+							>
+								User
+							</Link>
+							<Link
+							to="/budget-source-management"
+							className="block p-1 text-sm hover:underline"
+							>
+								Budget Source
+							</Link>
+							<Link
+							to="/category-management"
+							className="block p-1 text-sm hover:underline"
+							>
+								Category
+							</Link>
+							<Link
+							to="/location-management"
+							className="block p-1 text-sm hover:underline"
+							>
+								Location
+							</Link>
+							<Link
+							to="/project-management"
+							className="block p-1 text-sm hover:underline"
+							>
+								Project
+							</Link>
+							<Link
+							to="/expense-account-management"
+							className="block p-1 text-sm hover:underline"
+							>
+								Expense Account
+							</Link>
+						</div>
 						)}
-					</button>
-					{openSettings && open && (
-					<div className="ml-8 space-y-1">
-						<Link
-						to="/user-management"
-						className="block p-1 text-sm hover:underline"
-						>
-							User
-						</Link>
-						<Link
-						to="/budget-source-management"
-						className="block p-1 text-sm hover:underline"
-						>
-							Budget Source
-						</Link>
-						<Link
-						to="/category-management"
-						className="block p-1 text-sm hover:underline"
-						>
-							Category
-						</Link>
-						<Link
-						to="/location-management"
-						className="block p-1 text-sm hover:underline"
-						>
-							Location
-						</Link>
-						<Link
-						to="/project-management"
-						className="block p-1 text-sm hover:underline"
-						>
-							Project
-						</Link>
-						<Link
-						to="/expense-account-management"
-						className="block p-1 text-sm hover:underline"
-						>
-							Expense Account
-						</Link>
 					</div>
-					)}
+				)}
+				<br/>
+				<div onClick={handleLogout}
+					className="flex items-center gap-3 p-2 rounded-md cursor-pointer
+								hover:bg-red-600/20 hover:text-red-500 transition-colors"
+					>
+					<ArrowRightOnRectangleIcon className="h-5 w-5" />
+					{open && <span className="font-medium">Logout</span>}
 				</div>
 			</nav>
 			{/* Profile */}
 			<div className="p-4 border-t border-white/20 flex items-center gap-3 bg-white/5 hover:bg-white/10 transition">
-				<img
+				{/* <img
 					src="https://i.pravatar.cc/40"
 					alt="profile"
 					className="h-9 w-9 rounded-full border-2 border-white/30"
-				/>
+				/> */}
 				{open && (
-					<span className="text-sm font-medium text-gray-200 tracking-wide">
-					Tom Cook
-					</span>
+				<div className="flex flex-col items-start">
+					<Link
+					to="/profile"
+					className="text-sm font-medium text-gray-200 tracking-wide"
+					>
+					{user?.firstname} {user?.lastname}
+					</Link>
+					<span className="text-xs text-gray-400">{user?.permission}</span>
+				</div>
 				)}
 			</div>
 		</div>

@@ -14,8 +14,15 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20]  }) => {
 
     // Filtered data
     const filteredData = useMemo(() => {
-        // flatten children columns
-        const flatColumns = columns.flatMap(group => group.children);
+
+        // ⬅️ Added: recursive function to flatten any depth of nested columns
+        const flattenColumns = (cols) =>
+            cols.flatMap(col =>
+                col.children ? flattenColumns(col.children) : col
+            );
+
+        // ⬅️ Changed: use recursive flattenColumns() instead of .flatMap()
+        const flatColumns = flattenColumns(columns);
 
         return data.filter((row) => {
             // Global search
@@ -64,8 +71,9 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20]  }) => {
                 className="p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
             </div>
-            <div className="overflow-x-auto shadow-md rounded-2xl">
-                <table className="w-full border-collapse text-sm text-center relative">
+
+            <div className="overflow-y-auto max-h-[500px] shadow-md rounded-2xl">
+                <table className="min-w-max border-collapse text-sm text-center relative">
                     <thead className="bg-gray-100">
                         {/* First row: month headers */}
                         <tr>

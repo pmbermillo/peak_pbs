@@ -29,9 +29,6 @@ const columns = [
 ];
 
 const data = [
-    { name: "Alice", age: 25, score: 92 },
-    { name: "Bob", age: 30, score: 60 },
-    { name: "Charlie", age: 22, score: 78 },
 ];
 
 const RealignmentRequestRecord = () => {

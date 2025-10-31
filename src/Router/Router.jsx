@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Profiler } from 'react'
 import ProtectedRoute from './ProtectedRoute.jsx'
 import Login from '../Pages/Auth/Login.jsx'
 import {Dashboard} from '../Pages/Public/Dashboard.jsx'
@@ -14,7 +14,9 @@ import CategoryManagement from '../Pages/Public/CategoryManagement.jsx'
 import LocationManagement from '../Pages/Public/LocationManagement.jsx'
 import ProjectManagement from '../Pages/Public/ProjectManagement.jsx'
 import ExpenseAccountManagement from '../Pages/Public/ExpenseAccountManagement.jsx'
+import Reports from '../Pages/Public/Reports.jsx'
 import Estimate from '../Pages/Public/Estimate.jsx'
+import Profile from '../Pages/Public/Profile.jsx'
 
 const Router = () => {
   return (
@@ -32,14 +34,14 @@ const Router = () => {
               <Route 
                 path="budget-estimate" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER"]}>
                     <Estimate />
                   </ProtectedRoute>
               }/>
               <Route 
                 path="budget-request" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REQUESTOR", "APPROVER"]}>
                     <BudgetFormRequest />
                   </ProtectedRoute>
               }/>
@@ -47,7 +49,7 @@ const Router = () => {
                 path="realignment-request" 
                 element={
                   <ProtectedRoute>
-                    <RealignmentFormRequest />
+                    <RealignmentFormRequest requiredPermission={["ADMIN", "APPROVER"]} />
                   </ProtectedRoute>
               }/>
               <Route 
@@ -60,50 +62,64 @@ const Router = () => {
               <Route 
                 path="realignment-request-record" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER"]}>
                     <RealignmentRequestRecord />
+                  </ProtectedRoute>
+              }/>
+              <Route 
+                path="reports" 
+                element={
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER"]}>
+                    <Reports />
                   </ProtectedRoute>
               }/>
               <Route 
                 path="user-management" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
                     <UserManagement />
                   </ProtectedRoute>
               }/>
               <Route 
                 path="budget-source-management" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
                     <BudgetSourceManagement />
                   </ProtectedRoute>
               }/>
               <Route 
                 path="category-management" 
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
                     <CategoryManagement />
                   </ProtectedRoute>
               }/>
               <Route
                 path="location-management"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
                     <LocationManagement />
                   </ProtectedRoute>
               }/>
               <Route
                 path="project-management"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
                     <ProjectManagement />
                   </ProtectedRoute>
               }/>
               <Route
                 path="expense-account-management"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
                     <ExpenseAccountManagement />
+                  </ProtectedRoute>
+              }/>
+              <Route
+                path="profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
                   </ProtectedRoute>
               }/>
             </Route>

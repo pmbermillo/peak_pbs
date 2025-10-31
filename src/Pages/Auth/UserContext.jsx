@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
       try {
         const response = await GetMyProfile(); 
         setUser(response.data);
+        console.log(response)
       } catch (error) {
         console.error('Failed to fetch current user', error);
       }
