@@ -8,6 +8,7 @@ import { PostBudgetSource } from '../../Api/Module/SettingsApi';
 import { GetBudgetSource } from '../../Api/Module/SettingsApi';
 import { DeleteBudgetSource } from '../../Api/Module/SettingsApi';
 import { GetLeaders } from '../../Api/Module/SettingsApi';
+import { GetLocationOption } from '../../Api/Module/FormsApi';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -21,15 +22,19 @@ const BudgetSourceManagement = () => {
         budget_holder: "",
         first_approver: "",
         second_approver: "",
+        location: "",
     });
     const [approverOptions, setApproverOptions] = useState([]);
+    const [locationOptions, setLocationOptions] = useState([]);
 
     const columns = [
         // { header: "Code", accessor: "unique_code" },
         { header: "Budget Source", accessor: "budget_source" },
         { header: "Budget Holder", accessor: "budget_holder" },
+        { header: "Location", accessor: "location" },
         { header: "First Approver", accessor: "first_approver" },
         { header: "Second Approver", accessor: "second_approver" },
+        { header: "Third Approver", accessor: "third_approver" },
         { header: "Created By", accessor: "created_by" },
         { header: "Updated By", accessor: "updated_by" },
         { header: "Created At", accessor: "created_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd HH:mm"):"" },
@@ -47,6 +52,8 @@ const BudgetSourceManagement = () => {
                                 budget_holder: row.budget_holder,
                                 first_approver: row.first_approver,
                                 second_approver: row.second_approver,
+                                third_approver: row.third_approver,
+                                location: row.location,
                                 id: row.id,
                             });
                             setIsEditing(true);
@@ -74,6 +81,17 @@ const BudgetSourceManagement = () => {
         [e.target.name]: e.target.value,
         });
     };
+
+    const fetchLocations = async () => {
+        try {
+            const response = await GetLocationOption();
+            if (response && response.data) {
+                setLocationOptions(response.data[0]);
+            }
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+        }
+    }
 
     const handleDelete = (id) => {
         try {
@@ -133,6 +151,7 @@ const BudgetSourceManagement = () => {
     useEffect(() => {
         fetchData();
         fetchLeaders();
+        fetchLocations();
     }, []);
 
     const handleSubmit = async (e) => {
@@ -161,6 +180,8 @@ const BudgetSourceManagement = () => {
             budget_holder: "",
             first_approver: "",
             second_approver: "",
+            third_approver: "",
+            location: "",
         });
     }
     
@@ -238,6 +259,29 @@ const BudgetSourceManagement = () => {
                         className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                 </div>
+
+                {/* Third Approver */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                        Third Approver
+                    </label>
+                    <Select
+                        options={approverOptions}
+                        value={approverOptions.find((o) => o.value === formData.third_approver)}
+                        onChange={(selected) =>
+                            setFormData({ ...formData, third_approver: selected.value })
+                        }
+                        placeholder="Select or type approver"
+                        isClearable
+                        isSearchable
+                        menuPortalTarget={document.body}   // ⬅️ renders outside
+                        styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 }), // keeps dropdown on top
+                        }}
+                        className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    />
+                </div>
+
                 {/* Budget Source */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -253,6 +297,27 @@ const BudgetSourceManagement = () => {
                         required
                         className="w-full border rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
+                </div>
+
+                {/* Location */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                        Location *
+                    </label>
+                    <select
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="w-full border p-2 rounded"
+                    required
+                >
+                    <option value="" disabled>-- Select Location --</option>
+                    {locationOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
                 </div>
 
                 <div className="pt-4">

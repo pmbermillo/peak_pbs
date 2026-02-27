@@ -214,6 +214,12 @@ export const Sidebar = ({open, setOpen}) =>{
 							>
 								Expense Account
 							</Link>
+							<Link
+							to="/payment-management"
+							className="block p-1 text-sm hover:underline"
+							>
+								Mode of Payment
+							</Link>
 						</div>
 						)}
 					</div>

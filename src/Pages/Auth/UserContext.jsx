@@ -6,6 +6,7 @@ const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // null = not loaded, {} = loaded but empty
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -15,18 +16,16 @@ export const UserProvider = ({ children }) => {
         console.log(response)
       } catch (error) {
         console.error('Failed to fetch current user', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMe();
   }, []);
-
-  // useEffect(() => {
-  //   console.log("Header rerendered, user:", user);
-  // }, [user]);
   
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, loading, setUser }}>
       {children}
     </UserContext.Provider>
   );

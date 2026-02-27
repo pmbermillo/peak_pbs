@@ -336,3 +336,56 @@ export const DeleteExpenseAccount = async (id) => {
         throw error;
     }
 }
+
+export const AddPayment = async (data) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post(
+            "/abs/add-payment",
+            data,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while adding payment: ", error);
+        throw error;
+    }
+}
+
+export const GetPayment = async () => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.get(
+            "/abs/get-payments",
+            { 
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while fetching payment: ", error);
+        throw error;
+    }
+}
+
+export const DeletePayment = async (id) => {  
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post(
+            "/abs/delete-payment",  
+            id,
+            { 
+              headers: {    
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while deleting payment: ", error);
+        throw error;
+    }
+}

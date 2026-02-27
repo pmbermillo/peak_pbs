@@ -23,62 +23,76 @@ const Estimate = () => {
             header: "Details", 
             children: [
                 ...(["ADMIN", "REVIEWER", "SPECIALIST"].includes(user?.permission) ? [
-                { header: "Action", accessor: "action",
-                    renderCell: (_, row) => (
+                {
+                    header: "Action",
+                    accessor: "action",
+                    renderCell: (_, row) => {
+                        const isAdmin = user?.permission === "ADMIN";
+                        const isAllowedRole = ["ADMIN", "REVIEWER", "SPECIALIST"].includes(
+                        user?.permission
+                        );
+                        const isDisabled = row.status === "Disabled";
+
+                        return (
                         <div className="flex gap-2">
-                            {/* Edit Button */}
                             {editingRowId === row.id ? (
-                                <>
+                            <>
                                 {/* Save Button */}
                                 <button
-                                    title="Save"
-                                    onClick={() => {
-                                    handleSave(row.id, editFormData);
-                                    }}
-                                    className="px-2 py-1 text-xs bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                                title="Save"
+                                onClick={() => handleSave(row.id, editFormData)}
+                                className="px-2 py-1 text-xs bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
                                 >
-                                    <CheckIcon className="h-5 w-5" />
+                                <CheckIcon className="h-5 w-5" />
                                 </button>
 
                                 {/* Cancel Button */}
                                 <button
-                                    onClick={() => setEditingRowId(null)}
-                                    title="Cancel"
-                                    className="px-2 py-1 text-xs bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+                                title="Cancel"
+                                onClick={() => setEditingRowId(null)}
+                                className="px-2 py-1 text-xs bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
                                 >
-                                    <XMarkIcon className="h-5 w-5" />
+                                <XMarkIcon className="h-5 w-5" />
                                 </button>
-                                </>
+                            </>
                             ) : (
+                            <>
+                                {/* Edit / Delete buttons */}
+                                {isAllowedRole && (!isDisabled || isAdmin) && (
                                 <>
-                                {/* Edit Button */}
-                                <button
+                                    {/* Edit Button */}
+                                    <button
                                     title="Edit"
                                     onClick={() => {
-                                    setEditingRowId(row.id);
-                                    setEditFormData(row); // preload row values
+                                        setEditingRowId(row.id);
+                                        setEditFormData(row);
                                     }}
                                     className="px-2 py-1 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                                >
+                                    >
                                     <PencilIcon className="h-5 w-5" />
-                                </button>
+                                    </button>
 
-                                {/* Delete Button */}
-                                <button
+                                    {/* Delete Button */}
+                                    <button
                                     title="Delete"
                                     onClick={() => handleDelete(row.id)}
                                     className="px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-                                >
+                                    >
                                     <TrashIcon className="h-5 w-5" />
-                                </button>
+                                    </button>
                                 </>
+                                )}
+                            </>
                             )}
                         </div>
-                    )
+                        );
+                    },
                 }] : []),
+                { header: "Budget Source Code", accessor: "source_code" },
                 { header: "Location", accessor: "location" },
                 { header: "Budget Source", accessor: "budget_source" },
                 { header: "Category", accessor: "category" },
+                { header: "Classification", accessor: "classification" },
                 { header: "Project", accessor: "project" },
                 { header: "Account", accessor: "expense_account" },
                 { header: "Description", accessor: "purpose" },
@@ -378,10 +392,34 @@ const Estimate = () => {
         { 
             header: "Other details", 
             children: [
+                { header: "Total", accessor: "total" },
                 { header: "Created By", accessor: "created_by" },
                 { header: "Created At", accessor: "created_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd HH:mm"):"" },
                 { header: "Updated By", accessor: "updated_by" },
                 { header: "Updated At", accessor: "updated_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd HH:mm"):"" },
+                { header: "Status", accessor: "status",
+                    renderCell: (value, row, accessor) => 
+                    editingRowId === row.id ? (
+                        <select
+                        value={editFormData[accessor] ?? value ?? ""}
+                        onChange={(e) =>
+                            setEditFormData((prev) => ({ ...prev, [accessor]: e.target.value }))
+                        }
+                        className="border px-2 py-1 rounded-md text-sm w-full"
+                        >
+                            <option value="Enabled">Enabled</option>
+                            <option value="Disabled">Disabled</option>
+                        </select>
+                    ) : (
+                        <span className={`px-2 py-1 rounded-full text-sm font-semibold ${
+                            value === "Enabled" ? "bg-green-200 text-green-800" :
+                            value === "Disabled" ? "bg-red-200 text-red-800" :
+                            "bg-gray-200 text-gray-800"
+                        }`}>
+                            {value}
+                        </span>
+                    )
+                },
             ] 
         },   
 	];

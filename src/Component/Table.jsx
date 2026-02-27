@@ -102,7 +102,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20]  }) => {
                             {columns.flatMap((group, groupIndex) =>
                             group.children?.map((col, colIndex) => {
                                 const isSticky = colIndex < 3 && groupIndex === 0; // adjust sticky logic
-                                const leftValue = (colIndex + groupIndex * (group.children ? group.children.length : 1)) * 120;
+                                const leftValue = (colIndex + groupIndex * (group.children ? group.children.length : 1)) * 140;
 
                                 return (
                                 <th
@@ -142,7 +142,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20]  }) => {
                                 return children.map((col, colIndex) => {
                                     const isSticky = colIndex < 3 && groupIndex === 0;
                                     const leftValue =
-                                    (colIndex + (groupIndex * (group.children?.length || 1))) * 120;
+                                    (colIndex + (groupIndex * (group.children?.length || 1))) * 140;
 
                                     return (
                                     <td
@@ -177,7 +177,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20]  }) => {
                                 </td>
                             </tr>
                         )}
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
 

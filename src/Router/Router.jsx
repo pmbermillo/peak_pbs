@@ -14,6 +14,7 @@ import CategoryManagement from '../Pages/Public/CategoryManagement.jsx'
 import LocationManagement from '../Pages/Public/LocationManagement.jsx'
 import ProjectManagement from '../Pages/Public/ProjectManagement.jsx'
 import ExpenseAccountManagement from '../Pages/Public/ExpenseAccountManagement.jsx'
+import PaymentManagement from '../Pages/Public/PaymentManagement.jsx'
 import Reports from '../Pages/Public/Reports.jsx'
 import Estimate from '../Pages/Public/Estimate.jsx'
 import Profile from '../Pages/Public/Profile.jsx'
@@ -113,6 +114,13 @@ const Router = () => {
                 element={
                   <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
                     <ExpenseAccountManagement />
+                  </ProtectedRoute>
+              }/>
+              <Route
+                path="payment-management"
+                element={
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST"]}>
+                    <PaymentManagement />
                   </ProtectedRoute>
               }/>
               <Route

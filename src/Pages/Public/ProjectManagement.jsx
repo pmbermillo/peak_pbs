@@ -148,7 +148,7 @@ const ProjectManagement = () => {
                 >
                     Clear
                 </button>
-                </form>
+            </form>
                 <Table title="Project" columns={columns} data={dataProject} />
         </div>
     )

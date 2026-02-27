@@ -28,8 +28,18 @@ const BudgetRequestRecord = () => {
                     accessor: "action", 
                     renderCell: (_, row) => (
                         <div className="flex gap-2">
+                            {row.status !== "Processed" && row.status !== "Approved" && ["ADMIN", "REVIEWER", "APPROVER"].includes(user?.permission) && (
+                            <button
+                                title="Approval"
+                                onClick={() => handleApproval(row.id)}
+                                className="px-2 py-1 text-xs bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                            >
+                                <HandThumbUpIcon className="h-5 w-5" />
+                            </button>
+                            )}
                             {/* Edit Button */}
-                            {editingRowId === row.id ? (
+                            {editingRowId === row.id ?  
+                            (
                                 <>
                                 {/* Save Button */}
                                 {(
@@ -88,27 +98,22 @@ const BudgetRequestRecord = () => {
                                 )}
                                 </>
                             )}
-                            {row.status !== "Processed" && row.status !== "Approved" && ["ADMIN", "REVIEWER", "APPROVER"].includes(user?.permission) && (
-                            <button
-                                title="Approval"
-                                onClick={() => handleApproval(row.id)}
-                                className="px-2 py-1 text-xs bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-                            >
-                                <HandThumbUpIcon className="h-5 w-5" />
-                            </button>
-                            )}
+                            
                         </div>            
                     )
                 },
                 { header: "ID", accessor: "unique_id" },
+                { header: "Source Code", accessor: "source_code" },
                 { header: "Status", accessor: "status" },
                 { header: "Client Account", accessor: "client_account" },
                 { header: "Project", accessor: "project" },
                 { header: "Category", accessor: "category" },
+                { header: "Classification", accessor: "classification" },
                 { header: "Location", accessor: "location" },
                 { header: "Budget Source", accessor: "budget_source" },
                 { header: "Expense Account", accessor: "expense_account" },
                 { header: "Date Needed", accessor: "date_needed" },
+                { header: "Mode of Payment", accessor: "payment" },
                 { header: "Amount", accessor: "amount",
                     renderCell: (value, row, accessor) => (
                         <div>
@@ -188,6 +193,13 @@ const BudgetRequestRecord = () => {
             children: [
                 { header: "Approved By", accessor: "second_approver", renderCell: (value) => value ?? "" },
                 { header: "Date Approved", accessor: "second_approved_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd") : "" },
+            ] 
+        },  
+        { 
+            header: "Third Approver", 
+            children: [
+                { header: "Approved By", accessor: "third_approver", renderCell: (value) => value ?? "" },
+                { header: "Date Approved", accessor: "third_approved_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd") : "" },
             ] 
         },  
         { 
