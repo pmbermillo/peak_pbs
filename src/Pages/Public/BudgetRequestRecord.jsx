@@ -206,7 +206,7 @@ const BudgetRequestRecord = () => {
             header: "Accounting Specialist", 
             children: [
                 {
-                    header: "Actual Amount",
+                    header: "Actual Amount ($)",
                     accessor: "actual_amount",
                     renderCell: (value, row, accessor) => (
                         <div className={value != null ? "bg-green-100 px-2 py-1 rounded text-center" : "bg-red-100 px-2 py-1 rounded text-center"}>
@@ -307,6 +307,25 @@ const BudgetRequestRecord = () => {
     const handleSave = async (id, updatedRow) => {
         try {
             const response = await UpdateBudget(updatedRow);
+            if(response.data[0].actual_amount > response.data[0].amount) 
+            {
+                try {
+                    MySwal.fire({
+                        title: "Please ensure that the re-alignment has been processed. The actual amount entered is higher than the approved budget.",
+                        // text: "This action cannot be undone!",
+                        icon: "warning",
+                        // showCancelButton: true,
+                        confirmButtonColor: "#28a745",
+                        // cancelButtonColor: "#d33",
+                        confirmButtonText: "OK",
+                        // cancelButtonText: "No, cancel",
+                    })
+                } 
+                catch (error) {
+                    console.error('Error showing confirmation dialog:', error);
+                    toast.error('Failed to show confirmation dialog.');
+                }
+            }
             console.log(response);
             toast.success(response.data.message);
             await fetchBudgetRequest(); // refresh table
@@ -315,7 +334,7 @@ const BudgetRequestRecord = () => {
             console.error('Error deleting item:', error);
             toast.error(
                 error.response?.data?.message ??
-                'Failed to budget.'
+                'Failed to update budget request.'
             );
         }
     };

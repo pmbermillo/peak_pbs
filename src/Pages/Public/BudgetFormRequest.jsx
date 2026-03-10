@@ -4,6 +4,7 @@ import { GetModeOfPaymentOption } from '../../Api/Module/FormsApi';
 import Select from 'react-select';
 import { add } from 'date-fns';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const BudgetFormRequest = () => {
     const [formData, setFormData] = useState({
@@ -59,6 +60,17 @@ const BudgetFormRequest = () => {
             toast.success(response.data.message);
         } catch (error) {
             console.error("Error submitting form:", error);
+            if(error.response.data.status == "error" && error.response?.data?.message == "Insufficient available balance.")
+            {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Available Balance',
+                    text: 'Please review your budget items and request a realignment or identify another source code to proceed with this request.',
+                    footer: `<span class="text-sm">Available Balance: $${formData.availableBalance}</span>`
+                });
+                return;
+            }
+            toast.error(error.response?.data?.message || "Error submitting form");
         }
     };
 
@@ -521,8 +533,8 @@ const BudgetFormRequest = () => {
                     required
                 />
                 <div className="mt-2">
-                    <strong>Conversion:</strong>{" "}
-                    {formData.converted || "Please select a currency and enter amount"}
+                    <strong>Conversion:</strong>{" $"}
+                    {formData.converted || ""}
                 </div>
             </div>
 
