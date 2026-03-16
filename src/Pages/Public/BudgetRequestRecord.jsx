@@ -104,7 +104,40 @@ const BudgetRequestRecord = () => {
                 },
                 { header: "ID", accessor: "unique_id" },
                 { header: "Source Code", accessor: "source_code" },
-                { header: "Status", accessor: "status" },
+                { header: "Status", accessor: "status",
+                    renderCell: (value) => {
+                        let colorClass = "bg-gray-100 text-gray-800";
+                        switch (value) {
+                            case "Pending - Reviewer":
+                                colorClass = "bg-yellow-100 text-yellow-800";
+                                break;
+                            case "Pending - Approver":
+                                colorClass = "bg-orange-100 text-orange-800";
+                                break;
+                            case "Pending - Second Approver":
+                                colorClass = "bg-orange-100 text-orange-800";
+                                break;
+                            case "Pending - FinalApprover":
+                                colorClass = "bg-orange-100 text-orange-800";
+                                break;
+                            case "Approved":
+                                colorClass = "bg-blue-100 text-blue-800";
+                                break;
+                            case "Processed":
+                                colorClass = "bg-green-100 text-green-800";
+                                break;
+                            case "Rejected":
+                                colorClass = "bg-red-100 text-red-800";
+                                break;
+                        }
+                        return (
+                            <span className={`inline-block px-2 py-1 text-s font-semibold rounded-full ${colorClass}`}>
+                                {value}
+                            </span>
+                        );
+                    }
+
+                },
                 { header: "Client Account", accessor: "client_account" },
                 { header: "Project", accessor: "project" },
                 { header: "Category", accessor: "category" },
@@ -196,7 +229,7 @@ const BudgetRequestRecord = () => {
             ] 
         },  
         { 
-            header: "Third Approver", 
+            header: "Final Approver", 
             children: [
                 { header: "Approved By", accessor: "third_approver", renderCell: (value) => value ?? "" },
                 { header: "Date Approved", accessor: "third_approved_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd") : "" },
