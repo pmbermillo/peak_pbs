@@ -201,7 +201,26 @@ const BudgetRequestRecord = () => {
                         </div>
                     )
                 },
-                { header: "Attachment", accessor: "attachment", renderCell: (value) => value ? <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">View</a> : "—" },
+                {
+                    header: "Attachment",
+                    accessor: "attachment",
+                    renderCell: (value) => {
+                        if (!value) return "—";
+
+                        const fileUrl = `http://127.0.0.1:8000/uploads/${value}`;
+
+                        return (
+                        <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 underline"
+                        >
+                            View
+                        </a>
+                        );
+                    }
+                },
                 { header: "Requested By", accessor: "created_by" },
                 { header: "Date Requested", accessor: "created_at", renderCell: (value) => format(new Date(value), "yyyy-MM-dd HH:mm") },
                 { header: "Date Updated", accessor: "updated_at", renderCell: (value) => format(new Date(value), "yyyy-MM-dd HH:mm")},
