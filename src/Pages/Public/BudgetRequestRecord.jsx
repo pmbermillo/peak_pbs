@@ -102,7 +102,7 @@ const BudgetRequestRecord = () => {
                         </div>            
                     )
                 },
-                { header: "ID", accessor: "unique_id" },
+                { header: "Unique ID", accessor: "unique_id" },
                 { header: "Source Code", accessor: "source_code" },
                 { header: "Status", accessor: "status",
                     renderCell: (value) => {
