@@ -117,7 +117,7 @@ const BudgetRequestRecord = () => {
                             case "Pending - Second Approver":
                                 colorClass = "bg-orange-100 text-orange-800";
                                 break;
-                            case "Pending - FinalApprover":
+                            case "Pending - Final Approver":
                                 colorClass = "bg-orange-100 text-orange-800";
                                 break;
                             case "Approved":

@@ -229,11 +229,12 @@ export const RejectBudgetRequest = async (id) => {
     }
 }
 
-export const GetBudgetSourceCodeOption = async () => {
+export const GetBudgetSourceCodeOption = async (search) => {
     const token = localStorage.getItem('auth_token');
     try {
-        return await axiosInstance.get(
+        return await axiosInstance.post(
             "/abs/get-budget-source-code-options",
+            search,
             {
               headers: {
                 Authorization: `Bearer ${token}`, // Send token in the Authorization header
@@ -298,6 +299,129 @@ export const GetModeOfPaymentOption = async () => {
     }
 }
 
+export const GetRealignmentRequest = async (data) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post( 
+            "/abs/get-realignment-request",
+            data,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while fetching expense account: ", error);
+        throw error;
+    }
+}
 
+export const AddRealignmentRequest = async (data) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post( 
+            "/abs/add-realignment-request",
+            data,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data', // Set content type for file upload
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while fetching expense account: ", error);
+        throw error;
+    }
+}
 
+export const ApproveRealignmentRequest = async (id) => {
+    const token = localStorage.getItem('auth_token');
+    try {        
+        return await axiosInstance.post(  
+            "/abs/approve-realignment-request",
+            id,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while approving realignment request: ", error);
+        throw error;
+    }
+}
 
+export const RejectRealignmentRequest = async (id) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post(
+            "/abs/reject-realignment-request",
+            id,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while rejecting realignment request: ", error);
+        throw error;
+    } 
+}
+
+export const GetAvailableBalByMonthAPI = async (data) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post(
+            "/abs/get-available-balance-by-month",
+            data,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while fetching available balance by month: ", error);
+        throw error;
+    }
+}
+
+export const UpdateRealignment = async (data) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post(
+            `/abs/update-realignment-request`,
+            data,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while updating realignment request: ", error);
+        throw error;
+    }
+}
+
+export const DeleteRealignmentRequest = async (id) => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.post(
+            "/abs/delete-realignment-request",
+            id,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while deleting realignment request: ", error);
+        throw error;
+    }
+}

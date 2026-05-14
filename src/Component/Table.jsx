@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react'
 
-const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20]  }) => {
+const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }) => {
     const [filters, setFilters] = useState({});
     const [globalSearch, setGlobalSearch] = useState("");
     const [currentPage, setCurrentPage] = useState(1);

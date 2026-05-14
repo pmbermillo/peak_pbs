@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { add } from 'date-fns';
 import { toast } from 'react-toastify';
 import Swal from 'sweetalert2';
+import { useRef } from 'react';
 
 const BudgetFormRequest = () => {
     const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ const BudgetFormRequest = () => {
         amount: "",
         attachment: null,
         converted: "",
-        source_code: "",
+        source_code: null,
         classification: "",
         payment: "",
         availableBalance: 0
@@ -34,6 +35,9 @@ const BudgetFormRequest = () => {
     const [budgetSourceCodeOptions, setBudgetSourceCodeOptions] = useState([]);
     const [classificationOptions, setClassificationOptions] = useState([]);
     const [modeOfPaymentOptions, setModeOfPaymentOptions] = useState([]);
+    const [search, setSearch] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const handleCheckboxChange = (value) => {
         setSelectedCurrencies(value); // Only one can be active
@@ -53,11 +57,12 @@ const BudgetFormRequest = () => {
             Object.entries(formData).forEach(([key, value]) => {
             data.append(key, value);
         });
-
+        setSubmitLoading(true);
         try {
             const response = await AddBudgetRequest(data);
             console.log(response);
             toast.success(response.data.message);
+            await clearForm();
         } catch (error) {
             console.error("Error submitting form:", error);
             if(error.response.data.status == "error" && error.response?.data?.message == "Insufficient available balance.")
@@ -71,6 +76,8 @@ const BudgetFormRequest = () => {
                 return;
             }
             toast.error(error.response?.data?.message || "Error submitting form");
+        } finally {
+            setSubmitLoading(false);
         }
     };
 
@@ -183,9 +190,12 @@ const BudgetFormRequest = () => {
         }
     }
 
-    const fetchBudgetSourceCode = async () => {
+    const fetchBudgetSourceCode = async (searchTerm) => {
+        setLoading(true);
         try {
-            const response = await GetBudgetSourceCodeOption();
+            const response = await GetBudgetSourceCodeOption({
+                search: searchTerm
+            });
             if (response && response.data) {
                 setBudgetSourceCodeOptions(response.data[0]);
                 console.log(response);
@@ -199,10 +209,14 @@ const BudgetFormRequest = () => {
             }
         } catch (error) {
             console.error("Error fetching budget source code:", error);
+        }finally {
+
+            setLoading(false);
         }
     }
 
     const controller = new AbortController();
+    const fileInputRef = useRef(null);
 
     const handleBudgetSourceCodeChange = async (selected) => 
     {
@@ -214,7 +228,7 @@ const BudgetFormRequest = () => {
             // clear fields when select is cleared
             setFormData({
                 ...formData,
-                source_code: "",
+                source_code: selected ? selected.value : null,
                 budget_source: "",
                 location: "",
                 category: "",
@@ -250,12 +264,58 @@ const BudgetFormRequest = () => {
         }));
     };
 
+    const clearForm = () => {
+        setFormData({
+            budget_source: "",
+            location: "",
+            date_needed: "",
+            expense_account: "",
+            purpose: "",
+            project: "",
+            category: "",
+            client_account: "",
+            amount: "",
+            attachment: null,
+            converted: "",
+            source_code: null,
+            classification: "",
+            payment: "",
+            availableBalance: 0,
+        });
+        setSelectedCurrencies([]);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
+        console.log(formData);
+    };
 
     useEffect(() => {
         if (selectedCurrencies && formData.amount) {
             fetchCurrency();
         }
     }, [selectedCurrencies, formData.amount]);
+
+    useEffect(() => {
+        console.log(search);
+        if (search === "") {
+            setLoading(false);
+            fetchBudgetSourceCode("");
+            return;
+        }
+        setLoading(true);
+        // ⏳ WITH SEARCH → wait 3 seconds
+        const delayDebounce = setTimeout(async () => {
+            try {
+                await fetchBudgetSourceCode(search);
+            } finally {
+                setLoading(false);
+            }
+        }, 3000);
+
+        // cleanup (cancel previous timer if user keeps typing)
+        return () => clearTimeout(delayDebounce);
+
+    }, [search]);
 
     // Run only once on mount
     useEffect(() => {
@@ -265,7 +325,6 @@ const BudgetFormRequest = () => {
         fetchCategories();
         fetchProjects();
         fetchExpenseAccounts();
-        fetchBudgetSourceCode();
         fetchClassifications();
         fetchModeofPayment();
     }, []); 
@@ -277,13 +336,32 @@ const BudgetFormRequest = () => {
         className="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-2xl space-y-2"
         >
         {/* Title */}
-        <h2 className="text-2xl font-extrabold text-center text-gray-900 tracking-wide">
+        <h3 className="text-xl font-extrabold text-center text-gray-900 tracking-wide">
             <span className="bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent">
-            Budget Request Form
+                Budget Request Form
             </span>
-            <div className="mt-2 w-16 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded"></div><br/>
-            <div className='text-lg'>Available Balance: <span className='font-bold text-green-600'>${formData.availableBalance}</span></div>
-        </h2>
+
+            <div className="mt-2 w-16 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded"></div>
+
+            <br />
+
+            {/* NEW FLEX CONTAINER */}
+            <div className="flex justify-between items-center mt-2 px-2 text-base">
+                {/* LEFT */}
+                <div className="text-left">
+                Search: <input type="text" className="border rounded px-2 py-1 ml-1 font-normal" value={search}
+                    onChange={(e) => setSearch(e.target.value)} />
+                </div>
+
+                {/* RIGHT */}
+                <div className="text-right text-lg">
+                Available Balance:{" "}
+                <span className="font-bold text-green-600">
+                    ${formData.availableBalance}
+                </span>
+                </div>
+            </div>
+        </h3>
 
         {/* Form Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -291,7 +369,11 @@ const BudgetFormRequest = () => {
                 <label className="block mb-1 font-semibold">Budget Source Code</label>
                 <Select 
                     options={budgetSourceCodeOptions}
-                    value={budgetSourceCodeOptions.find((o) => o.value == formData.source_code)}
+                    value={
+                        formData.source_code
+                            ? budgetSourceCodeOptions.find((o) => o.value === formData.source_code)
+                            : null // ✅ force clear
+                    }
                     onChange={handleBudgetSourceCodeChange}
                     placeholder="Select or type budget source code"
                     isClearable
@@ -302,20 +384,11 @@ const BudgetFormRequest = () => {
                     }}
                     className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
-            {/* <select
-                name="budget_source_code"
-                value={formData.budget_source_code}
-                onChange={handleChange}
-                className="w-full border p-2 rounded"
-                required
-            >
-                <option value="" disabled>-- Select Budget Source Code --</option>
-                {budgetSourceCodeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select> */}
+                {loading && (
+                    <div className="text-sm text-gray-500 mt-1">
+                        Searching budget source codes...
+                    </div>
+                )}
             </div>
 
             {/* Cost Center */}
@@ -446,20 +519,6 @@ const BudgetFormRequest = () => {
                 }}
                 className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
-            {/* <select
-                name="expense_account"
-                value={formData.expense_account}
-                onChange={handleChange}
-                className="w-full border p-2 rounded"
-                required
-            >
-                <option value="" disabled>-- Select Expense Account --</option>
-                {expenseAccountOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select> */}
             </div>
 
             {/* Date Needed */}
@@ -543,6 +602,7 @@ const BudgetFormRequest = () => {
                 <input
                     type="file"
                     name="attachment"
+                    ref={fileInputRef}
                     onChange={handleChange}
                     className="w-full border p-2 rounded"
                 />
@@ -566,13 +626,42 @@ const BudgetFormRequest = () => {
         </div>
 
         {/* Submit */}
-        <div className="text-center">
+        <div className="flex items-center justify-center gap-3">
+
             <button
-            type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                type="submit"
+                disabled={submitLoading}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
             >
-            Submit Request
+                Submit Request
             </button>
+
+            {submitLoading && (
+                <div className="flex items-center gap-2 text-sm text-red-600">
+                    <svg
+                        className="w-4 h-4 animate-spin text-red-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                        />
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                    </svg>
+
+                    Loading...
+                </div>
+            )}
+
         </div>
         </form>
         </div>
