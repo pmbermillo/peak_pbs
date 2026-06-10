@@ -188,6 +188,7 @@ const realignmentFormRequest = () => {
             });
         }
     }, [formData.source_code_from]);
+    const [fileName, setFileName] = useState("");
 
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
@@ -196,6 +197,9 @@ const realignmentFormRequest = () => {
         [name]:
             type === "checkbox" ? checked : files ? files[0] : value,
         });
+        if (files && files[0]) {
+            setFileName(files[0].name);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -236,10 +240,11 @@ const realignmentFormRequest = () => {
             month_from: currentMonthValue,
             availableBalance: 0,
             amount: "",
-            attachment: null,
+            attachment: "",
             converted: "",
             purpose: "",
         });
+        setFileName("");
         setSelectedCurrencies([]);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -385,12 +390,21 @@ const realignmentFormRequest = () => {
                 {/* Attachments */}
                 <div>
                     <label className="block mb-1 font-semibold">Attachments (if any)</label>
-                    <input
-                    type="file"
-                    name="attachment"
-                    onChange={handleChange}
-                    className="w-full border p-2 rounded"
-                    />
+                    <label className="cursor-pointer inline-block bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">
+                        Upload Attachment
+
+                        <input
+                            type="file"
+                            name="attachment"
+                            onChange={handleChange}
+                            className="hidden"
+                        />
+                    </label>
+                    {fileName && (
+                        <p className="text-sm text-green-600 mt-2">
+                            {fileName}
+                        </p>
+                    )}
                     <p className="text-sm text-gray-500 mt-1">Optional — upload supporting files</p>
                 </div>
                 

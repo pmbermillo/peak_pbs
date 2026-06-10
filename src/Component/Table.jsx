@@ -59,7 +59,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
         <div className="p-4">
             {/* Title & Global Search */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-                <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+                <h2 className="text-lg font-bold text-gray-800">{title}</h2>
                 <input
                 type="text"
                 placeholder="Search table..."
@@ -68,12 +68,12 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
                     setGlobalSearch(e.target.value);
                     setCurrentPage(1);
                 }}
-                className="p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="p-2 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
             </div>
 
             <div className="overflow-y-auto max-h-[500px] shadow-md rounded-2xl">
-                <table className="min-w-max border-collapse text-sm text-center relative">
+                <table className="min-w-max border-collapse text-xs text-center relative">
                     <thead className="bg-gray-100">
                         {/* First row: month headers */}
                         <tr>
@@ -85,7 +85,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
                                 <th
                                 key={group.header}
                                 colSpan={(group.children ? group.children.length : 1)}
-                                className={`px-4 py-3 font-semibold text-gray-700 border border-gray-300`}
+                                className={`px-2 py-1 text-gray-700 border border-gray-300`}
                                 // style={{
                                 //     minWidth: `${group.children.length * 120}px`,
                                 //     left: isSticky ? `${leftValue}px` : undefined,
@@ -107,11 +107,11 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
                                 return (
                                 <th
                                     key={col.accessor}
-                                    className={`px-4 py-3 font-semibold text-gray-700 border border-gray-300 ${
+                                    className={`px-2 py-1 font-semibold text-gray-700 border border-gray-300 ${
                                     isSticky ? "sticky left-0 bg-gray-100 z-10" : ""
                                     }`}
                                     style={{
-                                    minWidth: "120px",
+                                    minWidth: "80px",
                                     left: isSticky ? `${leftValue}px` : undefined,
                                     }}
                                 >
@@ -147,11 +147,11 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
                                     return (
                                     <td
                                         key={col?.accessor || `cell-${rowIndex}-${colIndex}`}
-                                        className={`px-4 py-3 text-gray-700 border border-gray-300 ${
+                                        className={`px-2 py-1 text-gray-700 border border-gray-300 ${
                                         isSticky ? "sticky bg-white z-0" : ""
                                         }`}
                                         style={{
-                                        minWidth: "120px",
+                                        minWidth: "80px",
                                         left: isSticky ? `${leftValue}px` : undefined,
                                         }}
                                     >
@@ -171,7 +171,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
                                     (sum, group) => sum + ((group?.children?.length) || 1),
                                     0
                                     )}
-                                    className="px-4 py-3 text-center text-gray-500"
+                                    className="px-2 py-1 text-center text-gray-500"
                                 >
                                     No matching results
                                 </td>
@@ -184,7 +184,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
              {/* Pagination */}
             <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-3">
                 {/* Page Size */}
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-xs">
                 <span>Rows per page:</span>
                 <select
                     value={pageSize}
@@ -192,7 +192,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
                     setPageSize(Number(e.target.value));
                     setCurrentPage(1);
                     }}
-                    className="border rounded-md p-1 text-sm"
+                    className="border rounded-md p-[2px] text-[10px]"
                 >
                     {pageSizeOptions.map((size) => (
                     <option key={size} value={size}>
@@ -211,7 +211,7 @@ const Table = ({ title, columns, data, pageSizeOptions = [5, 10, 20, 50, 100]  }
                 >
                     Prev
                 </button>
-                <span className="text-sm">
+                <span className="text-xs">
                     Page {currentPage} of {totalPages || 1}
                 </span>
                 <button

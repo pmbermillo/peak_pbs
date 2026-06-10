@@ -42,13 +42,21 @@ const BudgetFormRequest = () => {
     const handleCheckboxChange = (value) => {
         setSelectedCurrencies(value); // Only one can be active
     };
-
+    const [fileName, setFileName] = useState("");
+    
     const handleChange = (e) => {
         const { name, value, files } = e.target;
-        setFormData({ 
-        ...formData, 
-        [name]: files && files.length > 0 ? files[0] : value,
+        const file = files && files.length > 0 ? files[0] : null;
+        setFormData({
+            ...formData,
+            [name]: file ?? value,
         });
+        
+        if (file) {
+            setFileName(file.name);
+        } else {
+            setFileName("");
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -279,13 +287,14 @@ const BudgetFormRequest = () => {
             converted: "",
             source_code: null,
             classification: "",
-            payment: "",
+            payment: null,
             availableBalance: 0,
         });
         setSelectedCurrencies([]);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
+        setFileName("");
         console.log(formData);
     };
 
@@ -599,13 +608,27 @@ const BudgetFormRequest = () => {
 
             <div>
                 <label className="block mb-1 font-semibold">Attachments (if any)</label>
+                <button
+                    type="button"
+                    onClick={() => fileInputRef.current.click()}
+                    className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+                >
+                    Upload File
+                </button>
+
                 <input
                     type="file"
                     name="attachment"
                     ref={fileInputRef}
                     onChange={handleChange}
-                    className="w-full border p-2 rounded"
+                    className="hidden"
                 />
+
+                {fileName && (
+                    <p className="text-sm text-green-600 mt-2">
+                        {fileName}
+                    </p>
+                )}
                 <p className="text-sm text-gray-500 mt-1">
                     Optional — upload supporting files
                 </p>
@@ -616,7 +639,9 @@ const BudgetFormRequest = () => {
                 <Select
                     className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     options={modeOfPaymentOptions}
-                    value={modeOfPaymentOptions.find((o) => o.value === formData.payment)}
+                    value={
+                        modeOfPaymentOptions.find((o) => o.value === formData.payment) || null
+                    }
                     onChange={(selected) =>
                         setFormData({ ...formData, payment: selected.value })
                     }

@@ -28,7 +28,7 @@ const PaymentManagement = () => {
 						onClick={() => handleDelete(row.id)} // 🔥 call a delete handler
 						className="px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
 					>
-						<TrashIcon className="h-5 w-5" />
+						<TrashIcon className="h-4 w-4" />
 					</button>
 				</div>
 			)

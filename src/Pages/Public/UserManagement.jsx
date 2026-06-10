@@ -50,7 +50,7 @@ const UserManagement = () => {
                         }}
                          className="px-2 py-1 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                     >
-                        <PencilIcon className="h-5 w-5" />
+                        <PencilIcon className="h-4 w-4" />
                     </button>
 
                     {/* Delete Button */}

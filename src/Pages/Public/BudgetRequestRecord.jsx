@@ -34,7 +34,7 @@ const BudgetRequestRecord = () => {
                                 onClick={() => handleApproval(row.id)}
                                 className="px-2 py-1 text-xs bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
                             >
-                                <HandThumbUpIcon className="h-5 w-5" />
+                                <HandThumbUpIcon className="h-4 w-4" />
                             </button>
                             )}
                             {/* Edit Button */}
@@ -54,7 +54,7 @@ const BudgetRequestRecord = () => {
                                         }}
                                         className="px-2 py-1 text-xs bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
                                     >
-                                        <CheckIcon className="h-5 w-5" />
+                                        <CheckIcon className="h-4 w-4" />
                                     </button>
                                 )}
                                 {/* Cancel Button */}
@@ -63,7 +63,7 @@ const BudgetRequestRecord = () => {
                                     title="Cancel"
                                     className="px-2 py-1 text-xs bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
                                 >
-                                    <XMarkIcon className="h-5 w-5" />
+                                    <XMarkIcon className="h-4 w-4" />
                                 </button>
                                 </>
                             ) : (
@@ -81,7 +81,7 @@ const BudgetRequestRecord = () => {
                                         }}
                                         className="px-2 py-1 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                                     >
-                                        <PencilIcon className="h-5 w-5" />
+                                        <PencilIcon className="h-4 w-4" />
                                     </button>
                                 )}
                                 {(
@@ -93,7 +93,7 @@ const BudgetRequestRecord = () => {
                                         onClick={() => handleDelete(row.id)}
                                         className="px-2 py-1 text-xs bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
                                     >
-                                        <TrashIcon className="h-5 w-5" />
+                                        <TrashIcon className="h-4 w-4" />
                                     </button>
                                 )}
                                 </>
@@ -206,8 +206,8 @@ const BudgetRequestRecord = () => {
                     accessor: "attachment",
                     renderCell: (value) => {
                         if (!value) return "—";
-
-                        const fileUrl = `http://127.0.0.1:8000/uploads/${value}`;
+                        
+                        const fileUrl = `http://127.0.0.1:8000/image/uploads/${value}`;
 
                         return (
                         <a
