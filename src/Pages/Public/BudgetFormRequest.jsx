@@ -339,358 +339,757 @@ const BudgetFormRequest = () => {
     }, []); 
 
     return (
-        <div>
-        <form
-        onSubmit={handleSubmit}
-        className="max-w-4xl mx-auto bg-white shadow-md p-6 rounded-2xl space-y-2"
-        >
-        {/* Title */}
-        <h3 className="text-xl font-extrabold text-center text-gray-900 tracking-wide">
-            <span className="bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent">
-                Budget Request Form
-            </span>
+        <div className="py-4 px-3">
+            <form
+                onSubmit={handleSubmit}
+                className="max-w-5xl mx-auto bg-white border border-gray-200
+                        rounded-xl shadow-sm overflow-hidden"
+            >
+                {/* Header */}
+                <div className="px-5 py-4 border-b border-gray-100">
+                    <div className="flex items-center justify-between gap-4">
 
-            <div className="mt-2 w-16 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded"></div>
+                        <div>
+                            <h3 className="text-lg font-bold text-gray-800">
+                                Budget Request
+                            </h3>
+                            <p className="text-xs text-gray-400 mt-0.5">
+                                Create a new budget request
+                            </p>
+                        </div>
 
-            <br />
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] uppercase tracking-wide text-gray-400">
+                                Available Balance
+                            </span>
 
-            {/* NEW FLEX CONTAINER */}
-            <div className="flex justify-between items-center mt-2 px-2 text-base">
-                {/* LEFT */}
-                <div className="text-left">
-                Search: <input type="text" className="border rounded px-2 py-1 ml-1 font-normal" value={search}
-                    onChange={(e) => setSearch(e.target.value)} />
-                </div>
-
-                {/* RIGHT */}
-                <div className="text-right text-lg">
-                Available Balance:{" "}
-                <span className="font-bold text-green-600">
-                    ${formData.availableBalance}
-                </span>
-                </div>
-            </div>
-        </h3>
-
-        {/* Form Fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label className="block mb-1 font-semibold">Budget Source Code</label>
-                <Select 
-                    options={budgetSourceCodeOptions}
-                    value={
-                        formData.source_code
-                            ? budgetSourceCodeOptions.find((o) => o.value === formData.source_code)
-                            : null // ✅ force clear
-                    }
-                    onChange={handleBudgetSourceCodeChange}
-                    placeholder="Select or type budget source code"
-                    isClearable
-                    isSearchable
-                    menuPortalTarget={document.body}   // ⬅️ renders outside
-                    styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }), // keeps dropdown on top
-                    }}
-                    className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-                {loading && (
-                    <div className="text-sm text-gray-500 mt-1">
-                        Searching budget source codes...
+                            <span className="px-2.5 py-1 rounded-md bg-green-50
+                                            text-green-600 text-sm font-bold">
+                                ${Number(formData.availableBalance || 0).toLocaleString()}
+                            </span>
+                        </div>
                     </div>
-                )}
-            </div>
-
-            {/* Cost Center */}
-            <div>
-            <label className="block mb-1 font-semibold">Budget Source</label>
-            <select
-                name="budget_source"
-                value={formData.budget_source}
-                onChange={handleChange}
-                className="w-full border p-2 rounded"
-                required
-            >
-                <option value="" disabled>-- Select Budget Source --</option>
-                {budgetSourceOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
-            </div>
-
-            {/* Location */}
-            <div>
-                <label className="block mb-1 font-semibold">Location</label>
-                <select
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
-                    className="w-full border p-2 rounded"
-                    required
-                >
-                    <option value="" disabled>-- Select Location --</option>
-                    {locationOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            {/* Client and Account */}
-            <div>
-                <label className="block mb-1 font-semibold">Client and Account</label>
-                <Select
-                    options={clientAccountOptions}
-                    value={clientAccountOptions.find((o) => o.value === formData.client_account)}
-                    onChange={(selected) =>
-                        setFormData({ ...formData, client_account: selected.value })
-                    }
-                    placeholder="Select or type approver"
-                    isClearable
-                    isSearchable
-                    menuPortalTarget={document.body}   // ⬅️ renders outside
-                    styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }), // keeps dropdown on top
-                    }}
-                    className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-            </div>
-
-            {/* Category */}
-            <div>
-            <label className="block mb-1 font-semibold">Category</label>
-            <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full border p-2 rounded"
-                required
-            >
-                <option value="" disabled>-- Select Category --</option>
-                {categoryOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                ))}
-            </select>
-            </div>
-
-            {/* Project */}
-            <div>
-                <label className="block mb-1 font-semibold">Project</label>
-                <Select 
-                    options={projectOptions}
-                    value={projectOptions.find((o) => o.value === formData.project)}
-                    onChange={(selected) =>
-                        setFormData({ ...formData, project: selected.value })
-                    }
-                    placeholder="Select or type project"
-                    isClearable
-                    isSearchable
-                    menuPortalTarget={document.body}   // ⬅️ renders outside
-                    styles={{
-                        menuPortal: (base) => ({ ...base, zIndex: 9999 }), // keeps dropdown on top
-                    }}
-                    className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-            </div>
-
-            <div>
-                <label className="block mb-1 font-semibold">Classification</label>
-                <Select
-                    options={classificationOptions}
-                    value={classificationOptions.find((o) => o.value === formData.classification)}
-                    onChange={(selected) =>
-                        setFormData({ ...formData, classification: selected.value })
-                    }
-                    className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    placeholder="Select or type classification"
-                />
-            </div>
-
-            {/* Expense Account */}
-            <div>
-            <label className="block mb-1 font-semibold">Expense Account</label>
-            <Select 
-                options={expenseAccountOptions}
-                value={expenseAccountOptions.find((o) => o.value === formData.expense_account)}
-                onChange={(selected) =>
-                    setFormData({ ...formData, expense_account: selected.value })
-                }
-                placeholder="Select or type expense account"
-                isClearable
-                isSearchable
-                menuPortalTarget={document.body}   // ⬅️ renders outside
-                styles={{
-                    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // keeps dropdown on top
-                }}
-                className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-            </div>
-
-            {/* Date Needed */}
-            <div>
-            <label className="block mb-1 font-semibold">Date Needed</label>
-            <input
-                type="date"
-                name="date_needed"
-                value={formData.date_needed}
-                onChange={handleChange}
-                className="w-full border p-2 rounded"
-                required
-            />
-            </div>
-
-            <div>
-                <label className="block mb-1 font-semibold">Select Currency</label>
-                <div className="flex justify-center items-center gap-6">
-                    <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        checked={selectedCurrencies === "Peso"}
-                        onChange={() => handleCheckboxChange("Peso")}
-                    />
-                    Peso
-                    </label>
-
-                    <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        checked={selectedCurrencies === "USDollar"}
-                        onChange={() => handleCheckboxChange("USDollar")}
-                    />
-                    US Dollar
-                    </label>
-                    <label className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        checked={selectedCurrencies === "BZDollar"}
-                        onChange={() => handleCheckboxChange("BZDollar")}
-                    />
-                    Belize Dollar
-                    </label>
                 </div>
-            </div>
 
-            {/* Purpose / Details (span 2 columns) */}
-            <div >
-                <label className="block mb-1 font-semibold">Purpose / Details</label>
-                <textarea
-                    name="purpose"
-                    value={formData.purpose}
-                    onChange={handleChange}
-                    placeholder="Enter purpose or details"
-                    className="w-full border p-2 rounded"
-                    rows="3"
-                    required
-                />
-            </div>
+                {/* Search */}
+                <div className="px-5 py-3 border-b border-gray-100">
+                    <div className="max-w-md">
+                        {/* <label className="block text-[11px] font-semibold
+                                        text-gray-500 mb-1">
+                            Search Budget Source Code
+                        </label> */}
 
-            {/* Amount */}
-            <div>
-                <label className="block mb-1 font-semibold">Enter Amount</label>
-                <input
-                    type="number"
-                    name="amount"
-                    value={formData.amount}
-                    onChange={handleChange}
-                    placeholder="Enter amount"
-                    className="w-full border p-2 rounded"
-                    required
-                />
-                <div className="mt-2">
-                    <strong>Conversion:</strong>{" $"}
-                    {formData.converted || ""}
+                        <div className="relative">
+                            <svg
+                                className="absolute left-3 top-1/2 -translate-y-1/2
+                                        w-4 h-4 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"
+                                />
+                            </svg>
+
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Search budget source code..."
+                                className="
+                                    w-full h-9
+                                    pl-9 pr-9
+                                    bg-gray-50
+                                    border border-gray-200
+                                    rounded-lg
+                                    text-xs text-gray-700
+                                    placeholder:text-gray-400
+                                    focus:bg-white
+                                    focus:outline-none
+                                    focus:ring-2 focus:ring-blue-100
+                                    focus:border-blue-400
+                                    transition
+                                "
+                            />
+
+                            {loading && (
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                                    <svg
+                                        className="w-3 h-3 animate-spin text-blue-500"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <circle
+                                            cx="12"
+                                            cy="12"
+                                            r="9"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            className="opacity-25"
+                                        />
+                                        <path
+                                            d="M21 12a9 9 0 0 0-9-9"
+                                            stroke="currentColor"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                        />
+                                    </svg>
+
+                                    <span className="text-[10px] text-blue-400">
+                                        Searching...
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <label className="block mb-1 font-semibold">Attachments (if any)</label>
-                <button
-                    type="button"
-                    onClick={() => fileInputRef.current.click()}
-                    className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-                >
-                    Upload File
-                </button>
+                {/* Form Content */}
+                <div className="p-5">
 
-                <input
-                    type="file"
-                    name="attachment"
-                    ref={fileInputRef}
-                    onChange={handleChange}
-                    className="hidden"
-                />
+                    <div className="grid grid-cols-1 md:grid-cols-2
+                                    gap-x-5 gap-y-3.5">
 
-                {fileName && (
-                    <p className="text-sm text-green-600 mt-2">
-                        {fileName}
-                    </p>
-                )}
-                <p className="text-sm text-gray-500 mt-1">
-                    Optional — upload supporting files
-                </p>
-            </div>
+                        {/* Budget Source Code */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Budget Source Code
+                            </label>
 
-            <div>
-                <label className="block mb-1 font-semibold">Mode of Payment</label>
-                <Select
-                    className="w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    options={modeOfPaymentOptions}
-                    value={
-                        modeOfPaymentOptions.find((o) => o.value === formData.payment) || null
-                    }
-                    onChange={(selected) =>
-                        setFormData({ ...formData, payment: selected.value })
-                    }
-                    placeholder="Select or type mode of payment"
-                />
-            </div>
-        </div>
+                            <Select
+                                options={budgetSourceCodeOptions}
+                                value={
+                                    formData.source_code
+                                        ? budgetSourceCodeOptions.find(
+                                            (o) => o.value === formData.source_code
+                                        )
+                                        : null
+                                }
+                                onChange={handleBudgetSourceCodeChange}
+                                placeholder="Select source code"
+                                isClearable
+                                isSearchable
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        minHeight: "36px",
+                                        height: "36px",
+                                        fontSize: "13px",
+                                        borderRadius: "6px",
+                                        borderColor: "#d1d5db",
+                                        boxShadow: "none",
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        padding: "0 8px",
+                                    }),
+                                    indicatorsContainer: (base) => ({
+                                        ...base,
+                                        height: "36px",
+                                    }),
+                                    menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
+                            />
+                        </div>
 
-        {/* Submit */}
-        <div className="flex items-center justify-center gap-3">
+                        {/* Budget Source */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Budget Source
+                            </label>
 
-            <button
-                type="submit"
-                disabled={submitLoading}
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-            >
-                Submit Request
-            </button>
+                            <select
+                                name="budget_source"
+                                value={formData.budget_source}
+                                onChange={handleChange}
+                                className="w-full h-9 border border-gray-300
+                                        rounded-md px-2.5 text-sm bg-white
+                                        focus:outline-none focus:ring-2
+                                        focus:ring-blue-100 focus:border-blue-500"
+                                required
+                            >
+                                <option value="" disabled>
+                                    Select budget source
+                                </option>
 
-            {submitLoading && (
-                <div className="flex items-center gap-2 text-sm text-red-600">
-                    <svg
-                        className="w-4 h-4 animate-spin text-red-600"
-                        fill="none"
-                        viewBox="0 0 24 24"
+                                {budgetSourceOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Location */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Location
+                            </label>
+
+                            <select
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                className="w-full h-9 border border-gray-300
+                                        rounded-md px-2.5 text-sm bg-white
+                                        focus:outline-none focus:ring-2
+                                        focus:ring-blue-100 focus:border-blue-500"
+                                required
+                            >
+                                <option value="" disabled>
+                                    Select location
+                                </option>
+
+                                {locationOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Client Account */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Client & Account
+                            </label>
+
+                            <Select
+                                options={clientAccountOptions}
+                                value={
+                                    clientAccountOptions.find(
+                                        (o) => o.value === formData.client_account
+                                    ) || null
+                                }
+                                onChange={(selected) =>
+                                    setFormData({
+                                        ...formData,
+                                        client_account: selected
+                                            ? selected.value
+                                            : ""
+                                    })
+                                }
+                                placeholder="Select client account"
+                                isClearable
+                                isSearchable
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        minHeight: "36px",
+                                        height: "36px",
+                                        fontSize: "13px",
+                                        borderRadius: "6px",
+                                        borderColor: "#d1d5db",
+                                        boxShadow: "none",
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        padding: "0 8px",
+                                    }),
+                                    indicatorsContainer: (base) => ({
+                                        ...base,
+                                        height: "36px",
+                                    }),
+                                    menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
+                            />
+                        </div>
+
+                        {/* Category */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Category
+                            </label>
+
+                            <select
+                                name="category"
+                                value={formData.category}
+                                onChange={handleChange}
+                                className="w-full h-9 border border-gray-300
+                                        rounded-md px-2.5 text-sm bg-white
+                                        focus:outline-none focus:ring-2
+                                        focus:ring-blue-100 focus:border-blue-500"
+                                required
+                            >
+                                <option value="" disabled>
+                                    Select category
+                                </option>
+
+                                {categoryOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Project */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Project
+                            </label>
+
+                            <Select
+                                options={projectOptions}
+                                value={
+                                    projectOptions.find(
+                                        (o) => o.value === formData.project
+                                    ) || null
+                                }
+                                onChange={(selected) =>
+                                    setFormData({
+                                        ...formData,
+                                        project: selected
+                                            ? selected.value
+                                            : ""
+                                    })
+                                }
+                                placeholder="Select project"
+                                isClearable
+                                isSearchable
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        minHeight: "36px",
+                                        height: "36px",
+                                        fontSize: "13px",
+                                        borderRadius: "6px",
+                                        borderColor: "#d1d5db",
+                                        boxShadow: "none",
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        padding: "0 8px",
+                                    }),
+                                    indicatorsContainer: (base) => ({
+                                        ...base,
+                                        height: "36px",
+                                    }),
+                                    menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
+                            />
+                        </div>
+
+                        {/* Classification */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Classification
+                            </label>
+
+                            <Select
+                                options={classificationOptions}
+                                value={
+                                    classificationOptions.find(
+                                        (o) => o.value === formData.classification
+                                    ) || null
+                                }
+                                onChange={(selected) =>
+                                    setFormData({
+                                        ...formData,
+                                        classification: selected
+                                            ? selected.value
+                                            : ""
+                                    })
+                                }
+                                placeholder="Select classification"
+                                isClearable
+                                isSearchable
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        minHeight: "36px",
+                                        height: "36px",
+                                        fontSize: "13px",
+                                        borderRadius: "6px",
+                                        borderColor: "#d1d5db",
+                                        boxShadow: "none",
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        padding: "0 8px",
+                                    }),
+                                    indicatorsContainer: (base) => ({
+                                        ...base,
+                                        height: "36px",
+                                    }),
+                                    menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
+                            />
+                        </div>
+
+                        {/* Expense Account */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Expense Account
+                            </label>
+
+                            <Select
+                                options={expenseAccountOptions}
+                                value={
+                                    expenseAccountOptions.find(
+                                        (o) => o.value === formData.expense_account
+                                    ) || null
+                                }
+                                onChange={(selected) =>
+                                    setFormData({
+                                        ...formData,
+                                        expense_account: selected
+                                            ? selected.value
+                                            : ""
+                                    })
+                                }
+                                placeholder="Select expense account"
+                                isClearable
+                                isSearchable
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        minHeight: "36px",
+                                        height: "36px",
+                                        fontSize: "13px",
+                                        borderRadius: "6px",
+                                        borderColor: "#d1d5db",
+                                        boxShadow: "none",
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        padding: "0 8px",
+                                    }),
+                                    indicatorsContainer: (base) => ({
+                                        ...base,
+                                        height: "36px",
+                                    }),
+                                    menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
+                            />
+                        </div>
+
+                        {/* Date Needed */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Date Needed
+                            </label>
+
+                            <input
+                                type="date"
+                                name="date_needed"
+                                value={formData.date_needed}
+                                onChange={handleChange}
+                                className="w-full h-9 border border-gray-300
+                                        rounded-md px-2.5 text-sm
+                                        focus:outline-none focus:ring-2
+                                        focus:ring-blue-100 focus:border-blue-500"
+                                required
+                            />
+                        </div>
+
+                        {/* Mode of Payment */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Mode of Payment
+                            </label>
+
+                            <Select
+                                options={modeOfPaymentOptions}
+                                value={
+                                    modeOfPaymentOptions.find(
+                                        (o) => o.value === formData.payment
+                                    ) || null
+                                }
+                                onChange={(selected) =>
+                                    setFormData({
+                                        ...formData,
+                                        payment: selected
+                                            ? selected.value
+                                            : ""
+                                    })
+                                }
+                                placeholder="Select payment method"
+                                isClearable
+                                isSearchable
+                                menuPortalTarget={document.body}
+                                styles={{
+                                    control: (base) => ({
+                                        ...base,
+                                        minHeight: "36px",
+                                        height: "36px",
+                                        fontSize: "13px",
+                                        borderRadius: "6px",
+                                        borderColor: "#d1d5db",
+                                        boxShadow: "none",
+                                    }),
+                                    valueContainer: (base) => ({
+                                        ...base,
+                                        padding: "0 8px",
+                                    }),
+                                    indicatorsContainer: (base) => ({
+                                        ...base,
+                                        height: "36px",
+                                    }),
+                                    menuPortal: (base) => ({
+                                        ...base,
+                                        zIndex: 9999,
+                                    }),
+                                }}
+                            />
+                        </div>
+
+                        {/* Amount */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Amount
+                            </label>
+
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2
+                                                -translate-y-1/2 text-xs
+                                                text-gray-400">
+                                    $
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="amount"
+                                    value={formData.amount}
+                                    onChange={handleChange}
+                                    placeholder="0.00"
+                                    className="w-full h-9 border border-gray-300
+                                            rounded-md pl-7 pr-3 text-sm
+                                            focus:outline-none focus:ring-2
+                                            focus:ring-blue-100
+                                            focus:border-blue-500"
+                                    required
+                                />
+                            </div>
+
+                            {formData.converted && (
+                                <div className="mt-1 text-[11px] text-gray-500">
+                                    Converted:
+                                    <span className="ml-1 font-semibold text-gray-700">
+                                        ${formData.converted}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Currency */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Currency
+                            </label>
+
+                            <div className="h-9 flex items-center gap-4 px-3
+                                            bg-gray-50 border border-gray-200
+                                            rounded-md">
+
+                                <label className="flex items-center gap-1.5
+                                                text-xs text-gray-600
+                                                cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCurrencies === "Peso"}
+                                        onChange={() =>
+                                            handleCheckboxChange("Peso")
+                                        }
+                                        className="w-3.5 h-3.5 rounded"
+                                    />
+                                    Peso
+                                </label>
+
+                                <label className="flex items-center gap-1.5
+                                                text-xs text-gray-600
+                                                cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={
+                                            selectedCurrencies === "USDollar"
+                                        }
+                                        onChange={() =>
+                                            handleCheckboxChange("USDollar")
+                                        }
+                                        className="w-3.5 h-3.5 rounded"
+                                    />
+                                    USD
+                                </label>
+
+                                <label className="flex items-center gap-1.5
+                                                text-xs text-gray-600
+                                                cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={
+                                            selectedCurrencies === "BZDollar"
+                                        }
+                                        onChange={() =>
+                                            handleCheckboxChange("BZDollar")
+                                        }
+                                        className="w-3.5 h-3.5 rounded"
+                                    />
+                                    BZD
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Attachment */}
+                        <div>
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Attachment
+                            </label>
+
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        fileInputRef.current.click()
+                                    }
+                                    className="h-9 px-3 inline-flex items-center
+                                            gap-2 border border-gray-300
+                                            rounded-md text-xs font-medium
+                                            text-gray-600 bg-white
+                                            hover:bg-gray-50 transition"
+                                >
+                                    <svg
+                                        className="w-4 h-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 00-5.657-5.657L5.757 9.757a6 6 0 108.485 8.486L20.485 12"
+                                        />
+                                    </svg>
+                                    Upload File
+                                </button>
+
+                                <input
+                                    type="file"
+                                    name="attachment"
+                                    ref={fileInputRef}
+                                    onChange={handleChange}
+                                    className="hidden"
+                                />
+
+                                {fileName && (
+                                    <span
+                                        className="text-[11px] text-green-600
+                                                truncate max-w-[200px]"
+                                        title={fileName}
+                                    >
+                                        {fileName}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Purpose */}
+                        <div className="md:col-span-2">
+                            <label className="block text-xs font-semibold
+                                            text-gray-600 mb-1">
+                                Purpose / Details
+                            </label>
+
+                            <textarea
+                                name="purpose"
+                                value={formData.purpose}
+                                onChange={handleChange}
+                                placeholder="Enter purpose or additional details..."
+                                rows="2"
+                                required
+                                className="w-full border border-gray-300 rounded-md
+                                        px-3 py-2 text-sm resize-none
+                                        focus:outline-none focus:ring-2
+                                        focus:ring-blue-100 focus:border-blue-500"
+                            />
+                        </div>
+
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="px-5 py-3 bg-gray-50 border-t border-gray-100
+                                flex items-center justify-end gap-3">
+
+                    {submitLoading && (
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <svg
+                                className="w-4 h-4 animate-spin"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                />
+
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8v8H4z"
+                                />
+                            </svg>
+                            Submitting...
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={submitLoading}
+                        className="h-9 px-5 rounded-md bg-blue-600
+                                text-white text-xs font-semibold
+                                shadow-sm hover:bg-blue-700
+                                transition disabled:opacity-50
+                                disabled:cursor-not-allowed"
                     >
-                        <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                        />
-                        <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v8H4z"
-                        />
-                    </svg>
-
-                    Loading...
+                        {submitLoading ? "Submitting..." : "Submit Request"}
+                    </button>
                 </div>
-            )}
-
+            </form>
         </div>
-        </form>
-        </div>
-    )
+    );
 }
 
 export default BudgetFormRequest
