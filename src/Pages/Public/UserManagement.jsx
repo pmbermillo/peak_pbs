@@ -3,6 +3,8 @@ import Table from '../../Component/Table'
 import { GetUser } from '../../Api/Module/SettingsApi';
 import { PostUser } from '../../Api/Module/SettingsApi';
 import { DeleteUser } from '../../Api/Module/SettingsApi';
+import { GetBudgetSource } from '../../Api/Module/SettingsApi';
+import { GetLocation } from '../../Api/Module/SettingsApi';
 import {format} from 'date-fns';
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid"; 
 import { toast } from 'react-toastify';
@@ -12,11 +14,40 @@ import withReactContent from 'sweetalert2-react-content';
 const UserManagement = () => {
     const MySwal = withReactContent(Swal);
     const [dataUser, setDataUser] = useState([]);
+    const [dataBudgetSource, setDataBudgetSource] = useState([]);
+    const [dataSite, setDataSite] = useState([]);
     const [formData, setFormData] = useState({
         employee_id: '',
         permission: '',
         userId: '',
+        budget_source: '',
+        site: '',
     });
+
+    const fetchLocation = async () => {
+        try {
+            const response = await GetLocation();
+            if (response && response.data[0]) {
+                setDataSite(response.data[0]);
+            }
+            console.log(response);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+    const fetchBudgetSource = async () => {
+        try {
+            const response = await GetBudgetSource();
+            if (response && response.data) {
+                setDataBudgetSource(response.data[0]);
+            }
+            console.log(response);
+        } catch (error) {
+            console.error('Error fetching budget source:', error);
+        }
+    };
+
     const permissionOptions = [
         { value: 'ADMIN', label: 'ADMIN' },
         { value: 'REQUESTOR', label: 'REQUESTOR' },
@@ -31,6 +62,8 @@ const UserManagement = () => {
         { header: "First Name", accessor: "firstname" },
         { header: "Email", accessor: "email" },
         { header: "Permission", accessor: "permission" },
+        { header: "Site", accessor: "site"},
+        { header: "Budget Source", accessor: "budget_source" },
         { header: "Created By", accessor: "created_by" },
         { header: "Created At", accessor: "created_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd HH:mm"):"" },
         { header: "Updated By", accessor: "updated_by" },
@@ -46,6 +79,8 @@ const UserManagement = () => {
                                 employee_id: row.employee_id,
                                 permission: row.permission,
                                 userId: row.id,
+                                budget_source: row.budget_source,
+                                site: row.site,
                             });
                         }}
                          className="px-2 py-1 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
@@ -88,6 +123,8 @@ const UserManagement = () => {
 
     useEffect(() => {
         fetchData();
+        fetchBudgetSource();
+        fetchLocation();
     }, []);
 
     const handleSubmit = async (e) => {
@@ -149,72 +186,140 @@ const UserManagement = () => {
             employee_id: '',
             permission: '',
             userId: '',
+            budget_source: '',
+            site: '',
         });
     }
 
     return (
         <div>
             <form
-            onSubmit={handleSubmit}
-            className="max-w-md mx-auto bg-white shadow-md rounded-2xl p-6 space-y-4"
+                onSubmit={handleSubmit}
+                className="w-full max-w-lg mx-auto bg-white border border-gray-200 shadow-md rounded-xl p-4 space-y-4"
             >
-            <h2 className="text-sm font-bold text-gray-800 text-center">
-                Employee Form
-            </h2>
-
-            {/* Row with two fields */}
-            <div className="grid grid-cols-2 gap-4">
-                {/* Employee ID */}
-                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Employee ID
-                </label>
-                <input
-                    type="text"
-                    name="employee_id"
-                    value={formData.employee_id}
-                    onChange={handleChange}
-                    placeholder="Enter Employee ID"
-                    className="w-full border rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    required
-                />
+                <div className="border-b border-gray-100 pb-3">
+                    <h2 className="text-base font-bold text-gray-800">
+                        Employee Form
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-1">
+                        Enter employee details and permissions.
+                    </p>
                 </div>
 
-                {/* Permission */}
-                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Permission
-                </label>
-                <select
-                    name="permission"
-                    value={formData.permission}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                    required
-                >
-                    <option value="" disabled>Select Permission</option>
-                    {permissionOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                    ))}
-                </select>
+                <div className="grid grid-cols-2 gap-3">
+                    {/* Employee ID */}
+                    <div>
+                        <label
+                            htmlFor="employee_id"
+                            className="block text-xs font-semibold text-gray-700 mb-1"
+                        >
+                            Employee ID
+                        </label>
+                        <input
+                            id="employee_id"
+                            type="text"
+                            name="employee_id"
+                            value={formData.employee_id}
+                            onChange={handleChange}
+                            placeholder="Enter ID"
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            required
+                        />
+                    </div>
+
+                    {/* Permission */}
+                    <div>
+                        <label
+                            htmlFor="permission"
+                            className="block text-xs font-semibold text-gray-700 mb-1"
+                        >
+                            Permission
+                        </label>
+                        <select
+                            id="permission"
+                            name="permission"
+                            value={formData.permission}
+                            onChange={handleChange}
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            required
+                        >
+                            <option value="" disabled>Select permission</option>
+                            {permissionOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Department */}
+                    <div>
+                        <label
+                            htmlFor="department"
+                            className="block text-xs font-semibold text-gray-700 mb-1"
+                        >
+                            Budget Source
+                        </label>
+                        <select
+                            id="budget_source"
+                            name="budget_source"
+                            value={formData.budget_source}
+                            onChange={handleChange}
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            required
+                        >
+                            <option value="" disabled>Select budget source</option>
+                            {dataBudgetSource.map((source) => (
+                                <option key={source.id} value={source.budget_source}>
+                                    {source.budget_source}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Team */}
+                    <div>
+                        <label
+                            htmlFor="team"
+                            className="block text-xs font-semibold text-gray-700 mb-1"
+                        >
+                            Site
+                        </label>
+                        <select
+                            id="site"
+                            name="site"
+                            value={formData.site}
+                            onChange={handleChange}
+                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            required
+                        >
+                            <option value="" disabled>Select site</option>
+                            {dataSite.map((site) => (
+                                <option key={site.id} value={site.location}>
+                                    {site.location}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-            </div>
-            {/* Submit button */}
-            <button
-                type="submit"
-                className="w-half bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-            >
-                Save
-            </button>
-            <button
-                type="button"
-                onClick={clearForm}
-                className="w-half bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition ml-2"
-            >
-                Clear
-            </button>
+
+                {/* Buttons */}
+                <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                    <button
+                        type="button"
+                        onClick={clearForm}
+                        className="px-4 py-2 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                    >
+                        Clear
+                    </button>
+
+                    <button
+                        type="submit"
+                        className="px-5 py-2 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                    >
+                        Save
+                    </button>
+                </div>
             </form>
             <Table title="Users" columns={columns} data={dataUser} />
         </div>

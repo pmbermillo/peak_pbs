@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { useUser } from "../Auth/UserContext";
 import { GetBudgetRequest, UpdateBudget, DeleteBudgetRequest, ApproveBudgetRequest, RejectBudgetRequest} from '../../Api/Module/FormsApi';
+import * as XLSX from "xlsx";
 
 const BudgetRequestRecord = () => {
     const { user } = useUser();
@@ -479,6 +480,13 @@ const BudgetRequestRecord = () => {
         }
     }
 
+    const exportExcel = () => {
+        const worksheet = XLSX.utils.json_to_sheet(dataBudgetRequest);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Budget Requests");
+        XLSX.writeFile(workbook, `Budget_Requests_${formData.year}.xlsx`);
+    }
+
     const handleChange = (e) => {
         const { name, value, files } = e.target;
 
@@ -501,32 +509,84 @@ const BudgetRequestRecord = () => {
 
     return (
         <div>
-            <div className="flex items-center gap-4">
-                <div className="flex flex-col">
-					<label htmlFor="year" className="text-sm font-semibold text-gray-700">
-					    Select Year
-					</label>
-					<select
-                        id="year"
-                        name="year"
-                        value={formData.year}
-                        onChange={handleChange}
-                        className="p-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-700"
-					>
-					<option value="">-- Select Year --</option>
-					{years.map((yr) => (
-						<option key={yr} value={yr}>
-						{yr}
-						</option>
-					))}
-					</select>
-				</div>
-                <div>
-                    <button className="p-2" onClick={fetchBudgetRequest} title="Refresh Data">
-                        <ArrowPathIcon className="h-5 w-5 text-gray-600 hover:text-blue-600 transition" />
-                    </button>
+            <div className="flex flex-wrap items-end gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                {/* Year Selection */}
+                <div className="flex min-w-[180px] flex-col gap-1.5">
+                    <label
+                        htmlFor="year"
+                        className="text-sm font-semibold text-gray-700"
+                    >
+                        Select Year
+                    </label>
+
+                    <div className="relative">
+                        <select
+                            id="year"
+                            name="year"
+                            value={formData.year}
+                            onChange={handleChange}
+                            className="w-full appearance-none rounded-lg border border-gray-300 bg-white py-2.5 pl-3 pr-10 text-sm font-medium text-gray-700 shadow-sm transition-all duration-200 hover:border-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100"
+                        >
+                            <option value="">Select Year</option>
+
+                            {years.map((yr) => (
+                                <option key={yr} value={yr}>
+                                    {yr}
+                                </option>
+                            ))}
+                        </select>
+
+                        <svg
+                            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m19 9-7 7-7-7"
+                            />
+                        </svg>
+                    </div>
                 </div>
-            </div><br/>
+                {/* Download Excel */}
+                <button
+                    type="button"
+                    onClick={exportExcel}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-indigo-100 active:scale-[0.98]"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.8}
+                        stroke="currentColor"
+                        className="h-5 w-5"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 16V4m0 12 4-4m-4 4-4-4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"
+                        />
+                    </svg>
+
+                    Download Excel
+                </button>
+                {/* Refresh */}
+                <button
+                    type="button"
+                    onClick={fetchBudgetRequest}
+                    title="Refresh Data"
+                    aria-label="Refresh data"
+                    className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white p-2.5 text-gray-500 shadow-sm transition-all duration-200 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-4 focus:ring-indigo-100 active:scale-95"
+                >
+                    <ArrowPathIcon className="h-5 w-5 transition-transform duration-300 hover:rotate-180" />
+                </button>
+            </div>
+            <br/>
             <Table title="Budget Request" columns={columns} data={dataBudgetRequest} />
         </div>
     )
