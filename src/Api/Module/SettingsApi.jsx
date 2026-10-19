@@ -75,7 +75,7 @@ export const GetBudgetSource = async () => {
     const token = localStorage.getItem('auth_token');
     try {
         return await axiosInstance.get(
-            "/abs/get-budget-source",
+            "/abs/get-budget-source-options",
             {
               headers: {
                 Authorization: `Bearer ${token}`, // Send token in the Authorization header

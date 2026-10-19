@@ -270,8 +270,8 @@ const UserManagement = () => {
                         >
                             <option value="" disabled>Select budget source</option>
                             {dataBudgetSource.map((source) => (
-                                <option key={source.id} value={source.budget_source}>
-                                    {source.budget_source}
+                                <option key={source.id} value={source.value}>
+                                    {source.label}
                                 </option>
                             ))}
                         </select>
