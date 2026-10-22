@@ -5,7 +5,7 @@ import {format} from 'date-fns';
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { toast } from 'react-toastify';
 import { PostBudgetSource } from '../../Api/Module/SettingsApi';
-import { GetBudgetSource } from '../../Api/Module/SettingsApi';
+import { GetBudgetSourceData } from '../../Api/Module/SettingsApi';
 import { DeleteBudgetSource } from '../../Api/Module/SettingsApi';
 import { GetLeaders } from '../../Api/Module/SettingsApi';
 import { GetLocationOption } from '../../Api/Module/FormsApi';
@@ -126,7 +126,7 @@ const BudgetSourceManagement = () => {
 
     const fetchData = async () => {
         try {
-            const response = await GetBudgetSource();
+            const response = await GetBudgetSourceData();
             if (response && response.data) {
                 setDataBudgetSource(response.data[0]);
             }

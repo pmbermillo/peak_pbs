@@ -88,6 +88,23 @@ export const GetBudgetSource = async () => {
     }
 }
 
+export const GetBudgetSourceData = async () => {
+    const token = localStorage.getItem('auth_token');
+    try {
+        return await axiosInstance.get(
+            "/abs/get-budget-source",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Send token in the Authorization header
+              },
+            }
+          );
+    } catch (error) {
+        console.error("Error while fetching budget source: ", error);
+        throw error;
+    }
+}
+
 export const DeleteBudgetSource = async (id) => {
     const token = localStorage.getItem('auth_token');
     try {

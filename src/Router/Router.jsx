@@ -35,7 +35,7 @@ const Router = () => {
               <Route 
                 path="budget-estimate" 
                 element={
-                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER"]}>
+                  <ProtectedRoute requiredPermission={["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER", "REQUESTOR"]}>
                     <Estimate />
                   </ProtectedRoute>
               }/>

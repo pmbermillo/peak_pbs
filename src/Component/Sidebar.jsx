@@ -61,7 +61,7 @@ export const Sidebar = ({open, setOpen}) =>{
 					<HomeIcon className="h-5 w-5" />
 					{open && "Dashboard"}
 				</Link>
-				{["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER"].includes(user?.permission) && (
+				{["ADMIN", "REVIEWER", "SPECIALIST", "APPROVER", "REQUESTOR"].includes(user?.permission) && (
 					<Link
 						to="/budget-estimate"
 						className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/10 hover:text-white transition"
