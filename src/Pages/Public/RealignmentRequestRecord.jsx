@@ -342,6 +342,7 @@ const RealignmentRequestRecord = () => {
                         );
                     },
                 },
+                { header: "Remakrs", accessor: "remarks" },
                 { header: "Updated By", accessor: "updated_by",},
                 { header: "Date Updated", accessor: "updated_at", renderCell: (value) => value ? format(new Date(value), "yyyy-MM-dd") : "-"}
             ]
@@ -420,50 +421,72 @@ const RealignmentRequestRecord = () => {
     }
 
     const handleApproval = (id) => {
-        try {
-            MySwal.fire({
-                title: "Are you sure you want to approve or reject this item?",
-                text: "This action cannot be undone!",
-                icon: "warning",
-                showCancelButton: true,
-                showDenyButton: true, // 👈 adds the Reject button
-                confirmButtonText: "Approve",
-                denyButtonText: "Reject",
-                cancelButtonText: "Cancel",
-                confirmButtonColor: "#28a745", // green for approve
-                denyButtonColor: "#d33",       // red for reject
-                cancelButtonColor: "#6c757d",  // gray for cancel
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await ApproveRealignmentRequest({ id });
-                        if (response.data.status === "success") {
-                            toast.success(response.data.message);
-                            await fetchRealignmentRequest();
-                        } else {
-                            toast.error(response.data.message);
-                        }
-                    } catch (error) {
-                        toast.error(error.response?.data?.message ?? "Failed to approve request");
-                    }
-                } else if (result.isDenied) {
-                    try {
-                        const response = await RejectRealignmentRequest({ id }); // 👈 your reject API
+        let remarksValue = "";
+        MySwal.fire({
+            title: "Are you sure you want to approve or reject this item?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            input: "textarea",
+            inputLabel: "Remarks:",
+            inputPlaceholder: "Enter remarks or reason for rejection...",
+            inputAttributes: {
+                "aria-label": "Enter remarks or reason for rejection",
+                rows: 4,
+            },
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: "Approve",
+            denyButtonText: "Reject",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#28a745",
+            denyButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
+            preDeny: () => {
+                remarksValue = MySwal.getPopup()
+                    ?.querySelector("textarea")
+                    ?.value.trim() ?? "";
+
+                if (!remarksValue) {
+                    MySwal.showValidationMessage(
+                        "Please enter a reason for rejection."
+                    );
+                    return false;
+                }
+
+                // Do not return true
+            },
+            
+        }).then(async (result) => {
+            if (result.isConfirmed || result.isDenied) {
+                const remarks = result.isDenied
+                    ? remarksValue
+                    : String(result.value ?? "").trim();
+
+                try {
+                    const response = result.isConfirmed
+                        ? await ApproveRealignmentRequest({ id, remarks })
+                        : await RejectRealignmentRequest({ id, remarks });
+
+                    if (response.data.status === "success") {
                         toast.success(response.data.message);
                         await fetchRealignmentRequest();
-                    } catch (error) {
-                        toast.error(error.response?.data?.message ?? "Failed to reject request");
+                    } else {
+                        toast.error(response.data.message);
                     }
+                } catch (error) {
+                    toast.error(
+                        error.response?.data?.message ??
+                        (result.isConfirmed
+                            ? "Failed to approve request"
+                            : "Failed to reject request")
+                    );
                 }
-            });
-        } catch (error) {
-            console.error('Error item:', error);
-            toast.error(
-                error.response?.data?.message ??
-                'Failed to approve the request.'
-            );
-        }
-    }
+            }
+        }).catch((error) => {
+            console.error("Error processing request:", error);
+            toast.error("Failed to process the request.");
+        });
+    };
 
     const fetchRealignmentRequest = async () => {
         try {

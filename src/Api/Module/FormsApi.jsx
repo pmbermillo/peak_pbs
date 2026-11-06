@@ -193,12 +193,12 @@ export const DeleteBudgetRequest = async (id) => {
     }
 }
 
-export const ApproveBudgetRequest = async (id) => {
+export const ApproveBudgetRequest = async ({id, remarks}) => {
     const token = localStorage.getItem('auth_token');
     try {
         return await axiosInstance.post(  
             "/abs/approve-budget-request",
-            id,
+            {id, remarks},
             {
               headers: {
                 Authorization: `Bearer ${token}`, // Send token in the Authorization header
@@ -211,12 +211,12 @@ export const ApproveBudgetRequest = async (id) => {
     }
 }
 
-export const RejectBudgetRequest = async (id) => {
+export const RejectBudgetRequest = async ({id, remarks}) => {
     const token = localStorage.getItem('auth_token');
     try {
         return await axiosInstance.post(  
             "/abs/reject-budget-request",
-            id,
+            {id, remarks},
             {
               headers: {
                 Authorization: `Bearer ${token}`, // Send token in the Authorization header
@@ -336,12 +336,12 @@ export const AddRealignmentRequest = async (data) => {
     }
 }
 
-export const ApproveRealignmentRequest = async (id) => {
+export const ApproveRealignmentRequest = async ({id, remarks}) => {
     const token = localStorage.getItem('auth_token');
     try {        
         return await axiosInstance.post(  
             "/abs/approve-realignment-request",
-            id,
+            {id, remarks},
             {
               headers: {
                 Authorization: `Bearer ${token}`, // Send token in the Authorization header
@@ -354,12 +354,12 @@ export const ApproveRealignmentRequest = async (id) => {
     }
 }
 
-export const RejectRealignmentRequest = async (id) => {
+export const RejectRealignmentRequest = async ({id, remarks}) => {
     const token = localStorage.getItem('auth_token');
     try {
         return await axiosInstance.post(
             "/abs/reject-realignment-request",
-            id,
+            {id, remarks},
             {
               headers: {
                 Authorization: `Bearer ${token}`, // Send token in the Authorization header

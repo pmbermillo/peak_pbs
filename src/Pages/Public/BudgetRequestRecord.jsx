@@ -86,8 +86,9 @@ const BudgetRequestRecord = () => {
                                     </button>
                                 )}
                                 {(
-                                    (row.status == "Pending - Reviewer" && ["REQUESTOR", "APPROVER"].includes(user?.permission)) ||
-                                    (["ADMIN"].includes(user?.permission))
+                                    ["Pending - Reviewer", "Approved"].includes(row?.status) &&
+                                    ["REQUESTOR", "APPROVER"].includes(user?.permission) ||
+                                    (row.status != "Processed" && ["ADMIN"].includes(user?.permission))
                                 ) && (
                                     <button
                                         title="Delete"
@@ -127,7 +128,16 @@ const BudgetRequestRecord = () => {
                             case "Processed":
                                 colorClass = "bg-green-100 text-green-800";
                                 break;
-                            case "Rejected":
+                            case "Rejected - Reviewer":
+                                colorClass = "bg-red-100 text-red-800";
+                                break;
+                            case "Rejected - Approver":
+                                colorClass = "bg-red-100 text-red-800";
+                                break;
+                            case "Rejected - Second Approver":
+                                colorClass = "bg-red-100 text-red-800";
+                                break;
+                            case "Rejected - Final Approver":
                                 colorClass = "bg-red-100 text-red-800";
                                 break;
                         }
@@ -222,6 +232,7 @@ const BudgetRequestRecord = () => {
                         );
                     }
                 },
+                { header: "Remarks", accessor: "remarks" },
                 { header: "Requested By", accessor: "created_by" },
                 { header: "Date Requested", accessor: "created_at", renderCell: (value) => format(new Date(value), "yyyy-MM-dd HH:mm") },
                 { header: "Date Updated", accessor: "updated_at", renderCell: (value) => format(new Date(value), "yyyy-MM-dd HH:mm")},
@@ -423,50 +434,79 @@ const BudgetRequestRecord = () => {
     }
 
     const handleApproval = (id) => {
-        try {
-            MySwal.fire({
-                title: "Are you sure you want to approve or reject this item?",
-                text: "This action cannot be undone!",
-                icon: "warning",
-                showCancelButton: true,
-                showDenyButton: true, // 👈 adds the Reject button
-                confirmButtonText: "Approve",
-                denyButtonText: "Reject",
-                cancelButtonText: "Cancel",
-                confirmButtonColor: "#28a745", // green for approve
-                denyButtonColor: "#d33",       // red for reject
-                cancelButtonColor: "#6c757d",  // gray for cancel
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    try {
-                        const response = await ApproveBudgetRequest({ id });
-                        if (response.data.status === "success") {
-                            toast.success(response.data.message);
-                            await fetchBudgetRequest();
-                        } else {
-                            toast.error(response.data.message);
-                        }
-                    } catch (error) {
-                        toast.error(error.response?.data?.message ?? "Failed to approve request");
-                    }
-                } else if (result.isDenied) {
-                    try {
-                        const response = await RejectBudgetRequest({ id }); // 👈 your reject API
+        let remarksValue = "";
+        MySwal.fire({
+            title: "Are you sure you want to approve or reject this item?",
+            text: "This action cannot be undone!",
+            icon: "warning",
+            input: "textarea",
+            inputLabel: "Remarks:",
+            inputPlaceholder: "Enter remarks or reason for rejection...",
+            inputAttributes: {
+                "aria-label": "Enter remarks or reason for rejection",
+                rows: 4,
+            },
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: "Approve",
+            denyButtonText: "Reject",
+            cancelButtonText: "Cancel",
+            confirmButtonColor: "#28a745",
+            denyButtonColor: "#d33",
+            cancelButtonColor: "#6c757d",
+
+            preDeny: () => {
+                remarksValue = MySwal.getPopup()
+                    ?.querySelector("textarea")
+                    ?.value.trim() ?? "";
+
+                if (!remarksValue) {
+                    MySwal.showValidationMessage(
+                        "Please enter a reason for rejection."
+                    );
+                    return false;
+                }
+
+                // Do not return true
+            },
+
+        }).then(async (result) => {
+
+            if (result.isConfirmed || result.isDenied) {
+
+                const remarks = result.isDenied
+                    ? remarksValue
+                    : String(result.value ?? "").trim();
+
+                try {
+                    const response = result.isConfirmed
+                        ? await ApproveBudgetRequest({ id, remarks })
+                        : await RejectBudgetRequest({ id, remarks });
+
+                    if (response.data.status === "success") {
                         toast.success(response.data.message);
                         await fetchBudgetRequest();
-                    } catch (error) {
-                        toast.error(error.response?.data?.message ?? "Failed to reject request");
+                    } else {
+                        toast.error(response.data.message);
                     }
+
+                } catch (error) {
+                    console.error("Error processing request:", error);
+
+                    toast.error(
+                        error.response?.data?.message ??
+                        (result.isConfirmed
+                            ? "Failed to approve request"
+                            : "Failed to reject request")
+                    );
                 }
-            });
-        } catch (error) {
-            console.error('Error item:', error);
-            toast.error(
-                error.response?.data?.message ??
-                'Failed to approve the request.'
-            );
-        }
-    }
+            }
+
+        }).catch((error) => {
+            console.error("Error processing request:", error);
+            toast.error("Failed to process the request.");
+        });
+    };
 
     const fetchBudgetRequest = async () => {
         try {
