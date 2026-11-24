@@ -254,7 +254,13 @@ const BudgetFormRequest = () => {
         }));
 
         // fetch related budget details
-        const response = await GetBudgetSourceCode({ source_code: selected.value }, { signal: newController.signal });
+        const response = await GetBudgetSourceCode(
+            {
+                source_code: selected.value,
+                date_needed: formData.date_needed
+            },
+            { signal: newController.signal }
+        );
 
         const data = response.data[0][0];
         console.log(data);
@@ -325,6 +331,14 @@ const BudgetFormRequest = () => {
         return () => clearTimeout(delayDebounce);
 
     }, [search]);
+
+    useEffect(() => {
+        if (formData.source_code && formData.date_needed) {
+            handleBudgetSourceCodeChange({
+                value: formData.source_code
+            });
+        }
+    }, [formData.date_needed]);
 
     // Run only once on mount
     useEffect(() => {
